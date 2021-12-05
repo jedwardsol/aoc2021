@@ -29,15 +29,14 @@ struct Point
 class LineIterator 
 {
 public:
-    using iterator_concept  = std::contiguous_iterator_tag;
+    using iterator_concept  = std::forward_iterator_tag;
     using iterator_category = std::forward_iterator_tag;
 
     using size_type         = std::size_t;
     using difference_type   = std::ptrdiff_t;
-
     using value_type        = Point;
-    using reference         = value_type &;
-
+    using reference         = value_type const &;
+    using pointer           = value_type const *;  
 
     LineIterator() : p{}, dx{}, dy{}
     {}
@@ -66,7 +65,7 @@ public:
         return *this;    
     }
 
-    Point operator*() const noexcept
+    value_type operator*() const noexcept
     {
         return p;
     }
@@ -119,7 +118,6 @@ public:
     {
         return dy()!=0 && dx()!=0;
     }
-
 
     auto begin() const noexcept
     {
