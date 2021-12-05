@@ -10,6 +10,9 @@
 #include <format>
 #include <thread>
 #include <chrono>
+#include <iterator>
+#include <concepts>
+#include <compare>
 
 using namespace std::literals;
 #include "include/thrower.h"
@@ -18,45 +21,114 @@ struct Point
 {
     int x;
     int y;
+
+    [[nodiscard]] bool                 operator== (Point const &) const noexcept = default;
 };
+
+
+class LineIterator 
+{
+public:
+    using iterator_concept  = std::contiguous_iterator_tag;
+    using iterator_category = std::forward_iterator_tag;
+
+    using size_type         = std::size_t;
+    using difference_type   = std::ptrdiff_t;
+
+    using value_type        = Point;
+    using reference         = value_type &;
+
+
+    LineIterator() : p{}, dx{}, dy{}
+    {}
+
+    LineIterator(Point p,int dx,int dy) : p{p}, dx{dx}, dy{dy}
+    {}
+
+    LineIterator(LineIterator const  &   ) noexcept =default;
+    LineIterator(LineIterator        &&  ) noexcept =default;
+ 
+    LineIterator &operator=(LineIterator const  &   ) noexcept =default;
+    LineIterator &operator=(LineIterator        &&  ) noexcept =default;
+
+    LineIterator   operator++(int) noexcept
+    {
+        auto original=*this;
+        p.x+=dx;
+        p.y+=dy;
+        return original;    
+    }
+
+    LineIterator   &operator++() noexcept
+    {
+        p.x+=dx;
+        p.y+=dy;
+        return *this;    
+    }
+
+    Point operator*() const noexcept
+    {
+        return p;
+    }
+
+
+public:
+
+    [[nodiscard]] bool                 operator== (LineIterator const &) const noexcept = default;
+
+private:
+    Point   p;
+    int     dx;
+    int     dy;
+};
+
+
+
+
+static_assert( std::forward_iterator <LineIterator>);
+
+
+
 
 struct Line
 {
-    Point start;
-    Point end;
+private:
+    Point pstart;
+    Point pend;
 
-    auto dy() const
+public:
+
+    Line(Point start, Point end) noexcept : pstart{start}, pend{end}
+    {}
+
+    auto dy() const noexcept
     {
-             if(start.y == end.y) return  0;
-        else if(start.y <  end.y) return  1;
-        else                      return -1;
+             if(pstart.y == pend.y) return  0;
+        else if(pstart.y <  pend.y) return  1;
+        else                        return -1;
     }
 
-    auto dx() const
+    auto dx() const noexcept
     {
-             if(start.x == end.x) return  0;
-        else if(start.x <  end.x) return  1;
-        else                      return -1;
+             if(pstart.x == pend.x) return  0;
+        else if(pstart.x <  pend.x) return  1;
+        else                        return -1;
     }
 
-    auto horizontal()  const
+    auto diagonal() const noexcept
     {
-        return dx()==0;
+        return dy()!=0 && dx()!=0;
     }
 
-    auto vertical() const
+
+    auto begin() const noexcept
     {
-        return dy()==0;
+        return LineIterator{pstart,dx(),dy()};
     }
 
-    auto diagonal() const
+    auto end() const noexcept
     {
-        return !horizontal() && !vertical();
-    }
-
-    auto len() const
-    {
-        return std::max( std::abs(start.x-end.x),  std::abs(start.y-end.y));
+        return LineIterator{ {pend.x+dx(), pend.y+dy()}, dx(), dy()};
     }
 };
 
@@ -91,18 +163,20 @@ auto parseData(std::vector<std::string> const &data)
 
     for(auto const &string : data)
     {
-        Line line{};
+        Point start,end;
 
         auto parsed = std::sscanf(string.c_str(),"%d,%d -> %d,%d",
-                                  &line.start.x,
-                                  &line.start.y,
-                                  &line.end.x,
-                                  &line.end.y);
+                                  &start.x,
+                                  &start.y,
+                                  &end.x,
+                                  &end.y);
 
         if(parsed!=4)
         {
             throw_runtime_error("parse failure " + string);
         }
+
+        Line line{start,end};
 
         lines.push_back(line);
     }
@@ -141,11 +215,9 @@ void go(std::vector<Line> const &lines, bool skipDiagonals)
             continue;
         }
 
-        for(int x=line.start.x, y=line.start.y, i=0 ;
-                i<=line.len();
-                x+=line.dx(), y+=line.dy(), i++)
+        for(auto point : line)
         {
-            grid->at(x).at(y)++;
+            grid->at(point.x).at(point.y)++;
         }
     }
 
