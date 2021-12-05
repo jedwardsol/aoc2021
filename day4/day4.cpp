@@ -46,6 +46,51 @@ struct Board
 {
     std::array<std::array<Square,5>,5>  board;
     bool                                won;
+
+    bool isComplete() const
+    {
+        for(auto line=0;line<5;line++)
+        {
+            bool lineComplete=true;
+
+            for(auto column=0;column<5;column++)
+            {
+                if(!board[line][column].second)
+                {
+                    lineComplete=false;
+                }
+            }
+
+            if(lineComplete)
+            {
+                return true;
+            }
+        }
+
+
+        for(auto column=0;column<5;column++)
+        {
+            bool columnComplete=true;
+
+            for(auto line=0;line<5;line++)
+            {
+                if(!board[line][column].second)
+                {
+                    columnComplete=false;
+                }
+            }
+
+            if(columnComplete)
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+
+
 };
 
 
@@ -115,47 +160,6 @@ auto readBoards(std::ifstream  &data)
 }
 
 
-bool isBoardComplete(Board const &board)
-{
-    for(auto line=0;line<5;line++)
-    {
-        bool lineComplete=true;
-
-        for(auto column=0;column<5;column++)
-        {
-            if(!board.board[line][column].second)
-            {
-                lineComplete=false;
-            }
-        }
-
-        if(lineComplete)
-        {
-            return true;
-        }
-    }
-
-
-    for(auto column=0;column<5;column++)
-    {
-        bool columnComplete=true;
-
-        for(auto line=0;line<5;line++)
-        {
-            if(!board.board[line][column].second)
-            {
-                columnComplete=false;
-            }
-        }
-
-        if(columnComplete)
-        {
-            return true;
-        }
-    }
-
-    return false;
-}
 
 
 int boardScore(Board const &board, int calledNumber)
@@ -191,7 +195,7 @@ int part1(std::vector<Board> &boards, std::vector<int> const &calledNumbers)
                     {
                         square.second = true;
                 
-                        if(isBoardComplete(board))
+                        if(board.isComplete())
                         {
                             board.won=true;
                             return boardScore(board,calledNumber);
@@ -223,7 +227,7 @@ void playUntilEnd(std::vector<Board> &boards, std::vector<int> const &calledNumb
                         {
                             square.second = true;
                 
-                            if(isBoardComplete(board))
+                            if(board.isComplete())
                             {
                                 board.won=true;
                                 std::cout << "Board wins with a score of << " << boardScore(board,calledNumber) << "\n";
