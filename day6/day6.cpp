@@ -6,6 +6,7 @@
 #include <format>
 #include <deque>
 #include <numeric>
+#include <ranges>
 
 using namespace std::literals;
 #include "include/thrower.h"
@@ -60,17 +61,9 @@ void part2(std::vector<int> const &fish)
 
     for(int day=1;day<=256;day++)
     {
-        auto next = Census{};   // today[x] = number of fish of age x
-
-        for(int i=1;i<=8;i++)
-        {
-            next[i-1]=today[i];
-        }
-
-        next[6]+=today[0];
-        next[8] =today[0];
-
-        today=next;
+        std::ranges::rotate(today,std::begin(today)+1);
+        
+        today[6]+=today[8];
 
         if(   day==80
            || day==256)
