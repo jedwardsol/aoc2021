@@ -2,38 +2,23 @@
 #include <vector>
 #include <algorithm>
 #include <iostream>
-#include <fstream>
+#include <sstream>
 #include <format>
 #include <deque>
+#include <numeric>
 
 using namespace std::literals;
 #include "include/thrower.h"
 
+extern char const *rawData;
 
 
 
-
-int main()
-try
+void part1(std::vector<int> const &rawFish)
 {
-    auto data = std::ifstream{"data.txt"};
+    std::deque<char>            fish(rawFish.begin(),rawFish.end());
 
-    if(!data)
-    {
-        throw_system_error("data.txt");
-    }
-
-
-    std::deque<char>             fish;
-    int                         age;
-
-    while(data >> age)
-    {
-        fish.push_back(age);
-        data.ignore();
-    }
-
-    for(int i=0;i<80;i++)
+    for(int day=0;day<80;day++)
     {
         for(auto &age : fish)
         {
@@ -50,7 +35,67 @@ try
         }
     }
 
-    std::cout << fish.size();
+    std::cout << std::format("Part 1 : {}\n",fish.size());;
+}
+
+
+void part2(std::vector<int> const &fish)
+{
+    using Census  = std::array<int64_t,9>;
+    auto  today   = Census{};   // today[x] = number of fish of age x
+    auto  numFish = [&]
+    {
+        return std::accumulate(std::begin(today),std::end(today),0LL);
+    };
+
+    for(auto age : fish)
+    {
+        today[age]++;
+    }
+
+    if(numFish()!=fish.size())
+    {
+        throw_runtime_error("wrong number");
+    }
+
+    for(int day=1;day<=256;day++)
+    {
+        auto next = Census{};   // today[x] = number of fish of age x
+
+        for(int i=1;i<=8;i++)
+        {
+            next[i-1]=today[i];
+        }
+
+        next[6]+=today[0];
+        next[8] =today[0];
+
+        today=next;
+
+        if(   day==80
+           || day==256)
+        {
+            std::cout << std::format("{:3} : {}\n",day,numFish());
+        }
+    }
+}
+
+
+int main()
+try
+{
+    auto data = std::istringstream{rawData};
+    auto fish = std::vector<int>{};
+    auto age  = 0;
+
+    while(data >> age)
+    {
+        fish.push_back(age);
+        data.ignore();
+    }
+
+    part1(fish);
+    part2(fish);
 
     return 0;
 }
