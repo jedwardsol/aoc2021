@@ -1,37 +1,38 @@
+#include <cassert>
+#include <cstdint>
+
 #include <array>
 #include <vector>
-#include <algorithm>
+#include <deque>
+
 #include <iostream>
 #include <sstream>
 #include <format>
-#include <deque>
+
+#include <algorithm>
 #include <numeric>
 #include <ranges>
 
 using namespace std::literals;
 #include "include/thrower.h"
 
-extern char const *rawData;
-
+extern std::istringstream data;
 
 
 void part1(std::vector<int> const &rawFish)
 {
-    std::deque<char>            fish(rawFish.begin(),rawFish.end());
+    std::deque<int8_t>            fish(rawFish.begin(),rawFish.end());
 
     for(int day=0;day<80;day++)
     {
         for(auto &age : fish)
         {
-            switch(age)
+            age--;
+
+            if(age==-1)
             {
-            case 0:
                 age=6;
                 fish.push_back(8);
-                break;
-
-            default:
-                age--;
             }
         }
     }
@@ -42,22 +43,20 @@ void part1(std::vector<int> const &rawFish)
 
 void part2(std::vector<int> const &fish)
 {
-    using Census  = std::array<int64_t,9>;
-    auto  today   = Census{};   // today[x] = number of fish of age x
-    auto  numFish = [&]
-    {
-        return std::accumulate(std::begin(today),std::end(today),0LL);
-    };
+    auto  today   = std::array<int64_t,9>{};   // today[x] = number of fish of age x
 
     for(auto age : fish)
     {
         today[age]++;
     }
 
-    if(numFish()!=fish.size())
+    auto  numFish = [&]
     {
-        throw_runtime_error("wrong number");
-    }
+        return std::accumulate(std::begin(today),std::end(today),0LL);
+    };
+
+
+    assert(numFish()!=fish.size());
 
     for(int day=1;day<=256;day++)
     {
@@ -77,7 +76,6 @@ void part2(std::vector<int> const &fish)
 int main()
 try
 {
-    auto data = std::istringstream{rawData};
     auto fish = std::vector<int>{};
     auto age  = 0;
 
