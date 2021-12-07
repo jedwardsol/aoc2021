@@ -20,10 +20,10 @@ using namespace std::literals;
 
 extern std::istringstream data;
 
-using EnergyCalc = std::function<int(int,int)>;
+using EnergyCostFunc = std::function<int(int,int)>;
 
 
-int energyCost(std::vector<int> const &crabs, int targetPosition, EnergyCalc  f)
+int totalCost(std::vector<int> const &crabs, int targetPosition, EnergyCostFunc  f)
 {
     int energy{};
 
@@ -36,7 +36,7 @@ int energyCost(std::vector<int> const &crabs, int targetPosition, EnergyCalc  f)
 }
 
 
-void bruteForce(std::vector<int> const &crabs, EnergyCalc f)
+void bruteForce(std::vector<int> const &crabs, EnergyCostFunc f)
 {
     auto [min,max] = std::ranges::minmax_element(crabs);
 
@@ -45,7 +45,7 @@ void bruteForce(std::vector<int> const &crabs, EnergyCalc f)
 
     for(auto candidate=*min; candidate<=*max; candidate++)
     {
-        minimumEnergy = std::min(minimumEnergy, energyCost(crabs,candidate,f));
+        minimumEnergy = std::min(minimumEnergy, totalCost(crabs,candidate,f));
     }
 
     std::cout << minimumEnergy << '\n';
@@ -84,16 +84,15 @@ try
         std::ranges::sort(crabs);
         auto median = (  crabs[crabs.size()/2] + crabs[crabs.size()/2-1]) / 2;
 
-        std::cout << energyCost(crabs,median,part1) << '\n';
+        std::cout << totalCost(crabs,median,part1) << '\n';
     }
 
     {
-//      int mean    = static_cast<int>(std::round( std::accumulate(crabs.begin(), crabs.end(),0.0) / crabs.size() ));
-        int mean    = static_cast<int>(std::floor( std::accumulate(crabs.begin(), crabs.end(),0.0) / crabs.size() ));
+        int mean1    = static_cast<int>(std::ceil ( std::accumulate(crabs.begin(), crabs.end(),0.0) / crabs.size() ));
+        int mean2    = static_cast<int>(std::floor( std::accumulate(crabs.begin(), crabs.end(),0.0) / crabs.size() ));
 
-        std::cout << energyCost(crabs,mean,part2) << '\n';
+        std::cout << std::min(totalCost(crabs,mean1,part2), totalCost(crabs,mean2,part2)) << '\n';
     }
-
 
     return 0;
 }
