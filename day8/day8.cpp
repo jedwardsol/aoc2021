@@ -5,6 +5,7 @@
 #include <vector>
 #include <deque>
 #include <map>
+#include <string>
 
 #include <fstream>
 #include <iostream>
@@ -112,10 +113,9 @@ struct Puzzle
 
         for(auto const &output : outputs)
         {
-            answer*=10;
-
             assert(string_to_number.contains(output));
 
+            answer*=10;
             answer+=string_to_number[output];
         }
 
@@ -127,8 +127,6 @@ struct Puzzle
         assert(number_to_string.size()==string_to_number.size());
         return number_to_string.size();
     }
-
-
 };
 
 
@@ -157,7 +155,7 @@ void part1(std::vector<Puzzle> const &puzzles)
 
 bool contains(std::string const &target,  std::string const &pattern)
 {
-    for(auto c : pattern)
+    for(auto c : pattern)             
     {
         if(target.find(c) == target.npos)
         {
@@ -265,7 +263,6 @@ int solve(Puzzle &puzzle)
     }
     assert(puzzle.numSolved()==10);
 
-
     return puzzle.answer();
 }
 
@@ -312,10 +309,10 @@ try
             std::ranges::sort(puzzle.patterns.back());
         }
 
-        std::ranges::sort(puzzle.patterns, [](auto const &s1, auto const &s2){return s1.size() < s2.size();});
 
-        std::string dummy;
-        line >> dummy;
+        std::string pipe;
+        line >> pipe;
+        assert(pipe == "|"s);
 
         for(int i=0;i<4;i++)
         {
@@ -328,9 +325,7 @@ try
     }
 
     part1(puzzles);
-
     part2(puzzles);
-
 
     return 0;
 }
