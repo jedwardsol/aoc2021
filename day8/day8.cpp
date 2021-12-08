@@ -198,19 +198,15 @@ int solve(Puzzle &puzzle)
     //                (6 is the only 6-element digit that doesn't contain 1)
     for(auto const &pattern : puzzle.patterns)
     {
-        if(pattern.size() == 5)
+        if(   pattern.size() == 5
+           && contains(pattern,  puzzle.number_to_string[1]))
         {
-            if( contains(pattern,  puzzle.number_to_string[1]))
-            {
-                puzzle.associate(pattern,3);
-            }
+            puzzle.associate(pattern,3);
         }
-        else if(   pattern.size() == 6)
+        else if(    pattern.size() == 6
+                && !contains(pattern,  puzzle.number_to_string[1]))
         {
-            if( !contains(pattern,  puzzle.number_to_string[1]))
-            {
-                puzzle.associate(pattern,6);
-            }
+            puzzle.associate(pattern,6);
         }
     }
     assert(puzzle.numSolved()==6);
@@ -219,12 +215,10 @@ int solve(Puzzle &puzzle)
     // find 9       (9 is the only 6-element digit that contains 3)
     for(auto const &pattern : puzzle.patterns)
     {
-        if(   pattern.size() == 6)
+        if(   pattern.size() == 6
+           && contains(pattern,  puzzle.number_to_string[3]))
         {
-            if(contains(pattern,  puzzle.number_to_string[3]))
-            {
-                puzzle.associate(pattern,9);
-            }
+            puzzle.associate(pattern,9);
         }
     }
     assert(puzzle.numSolved()==7);
@@ -232,12 +226,10 @@ int solve(Puzzle &puzzle)
     // find 0       (0 is the remaining 6-element digit)
     for(auto const &pattern : puzzle.patterns)
     {
-        if(   pattern.size() == 6)
+        if(    pattern.size() == 6                         
+           && !puzzle.string_to_number.contains(pattern))
         {
-            if(!puzzle.string_to_number.contains(pattern))
-            {
-                puzzle.associate(pattern,0);
-            }
+            puzzle.associate(pattern,0);
         }
     }
     assert(puzzle.numSolved()==8);
@@ -246,18 +238,16 @@ int solve(Puzzle &puzzle)
     // find 2 and 5   (9 contains 5,  but not 2)
     for(auto const &pattern : puzzle.patterns)
     {
-        if(   pattern.size() == 5)
+        if(   pattern.size() == 5
+           && !puzzle.string_to_number.contains(pattern))
         {
-            if(!puzzle.string_to_number.contains(pattern) )
+            if(contains(puzzle.number_to_string[9],  pattern ))
             {
-                if(contains(puzzle.number_to_string[9],  pattern ))
-                {
-                    puzzle.associate(pattern,5);
-                }
-                else 
-                {
-                    puzzle.associate(pattern,2);
-                }
+                puzzle.associate(pattern,5);
+            }
+            else 
+            {
+                puzzle.associate(pattern,2);
             }
         }
     }
