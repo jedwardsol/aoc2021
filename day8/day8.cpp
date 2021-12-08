@@ -58,27 +58,27 @@ b    .  b    .  .    c  b    c  b    c
  5's
 
 
-   2:          3:          5:  
-  aaaa        aaaa        aaaa                3
- .    c      .    c      b    .              1  2
- .    c      .    c      b    .
-  dddd        dddd        dddd                3 
- e    .      .    f      .    f              1  2
- e    .      .    f      .    f
-  gggg        gggg        gggg                3
+       2:          3:          5:  
+      aaaa        aaaa        aaaa            
+     .    c      .    c      b    .           
+     .    c      .    c      b    .
+      dddd        dddd        dddd            
+     e    .      .    f      .    f           
+     e    .      .    f      .    f
+      gggg        gggg        gggg            
           
           
           
 6's       
           
-   0:          6:          9:
-  aaaa        aaaa        aaaa                3
- b    c      b    .      b    c              3  2
- b    c      b    .      b    c
-  ....        dddd        dddd                2
- e    f      e    f      .    f              2  3 
- e    f      e    f      .    f
-  gggg        gggg        gggg                3
+       0:          6:          9:
+      aaaa        aaaa        aaaa            
+     b    c      b    .      b    c           
+     b    c      b    .      b    c
+      ....        dddd        dddd            
+     e    f      e    f      .    f           
+     e    f      e    f      .    f
+      gggg        gggg        gggg            
 
 
 
@@ -93,6 +93,42 @@ struct Puzzle
 
     std::map<std::string,int> string_to_number;
     std::map<int,std::string> number_to_string;
+
+
+    auto associate(std::string const &pattern, int number)
+    {
+        assert(!string_to_number.contains(pattern));
+        assert(!number_to_string.contains(number));
+
+        string_to_number[pattern] = number;
+        number_to_string[number]  = pattern;
+
+        assert(string_to_number.size() == number_to_string.size());
+    }
+
+    auto answer()
+    {
+        int answer{};
+
+        for(auto const &output : outputs)
+        {
+            answer*=10;
+
+            assert(string_to_number.contains(output));
+
+            answer+=string_to_number[output];
+        }
+
+        return answer;
+    }
+
+    auto numSolved()
+    {
+        assert(number_to_string.size()==string_to_number.size());
+        return number_to_string.size();
+    }
+
+
 };
 
 
@@ -133,20 +169,6 @@ bool contains(std::string const &target,  std::string const &pattern)
 }
 
 
-auto associate(Puzzle &puzzle, std::string const &pattern, int number)
-{
-    assert(!puzzle.string_to_number.contains(pattern));
-    assert(!puzzle.number_to_string.contains(number));
-
-
-
-    puzzle.string_to_number[pattern] = number;
-    puzzle.number_to_string[number]  = pattern;
-
-
-    assert(puzzle.string_to_number.size() == puzzle.number_to_string.size());
-
-}
 
 
 int solve(Puzzle &puzzle)
@@ -156,46 +178,44 @@ int solve(Puzzle &puzzle)
     {
         if(   pattern.size() == 2)
         {
-            associate(puzzle,pattern,1);
+            puzzle.associate(pattern,1);
         }
         else if(   pattern.size() == 3)
         {
-            associate(puzzle,pattern,7);
+            puzzle.associate(pattern,7);
         }
         else if(   pattern.size() == 4)
         {
-            associate(puzzle,pattern,4);
+            puzzle.associate(pattern,4);
         }
         else if(   pattern.size() == 7)
         {
-            associate(puzzle,pattern,8);
+            puzzle.associate(pattern,8);
         }
     }
-    assert(puzzle.number_to_string.size()==4);
-    assert(puzzle.string_to_number.size()==4);
+    assert(puzzle.numSolved()==4);
 
 
     // find 3 and 6   (3 is the only 5-element digit that contains 1)
-    //                (6 is the only 6-element digit that doesn't contains 1)
+    //                (6 is the only 6-element digit that doesn't contain 1)
     for(auto const &pattern : puzzle.patterns)
     {
-        if(   pattern.size() == 5)
+        if(pattern.size() == 5)
         {
             if( contains(pattern,  puzzle.number_to_string[1]))
             {
-                associate(puzzle,pattern,3);
+                puzzle.associate(pattern,3);
             }
         }
         else if(   pattern.size() == 6)
         {
             if( !contains(pattern,  puzzle.number_to_string[1]))
             {
-                associate(puzzle,pattern,6);
+                puzzle.associate(pattern,6);
             }
         }
     }
-    assert(puzzle.number_to_string.size()==6);
-    assert(puzzle.string_to_number.size()==6);
+    assert(puzzle.numSolved()==6);
 
 
     // find 9       (9 is the only 6-element digit that contains 3)
@@ -205,12 +225,11 @@ int solve(Puzzle &puzzle)
         {
             if(contains(pattern,  puzzle.number_to_string[3]))
             {
-                associate(puzzle,pattern,9);
+                puzzle.associate(pattern,9);
             }
         }
     }
-    assert(puzzle.number_to_string.size()==7);
-    assert(puzzle.string_to_number.size()==7);
+    assert(puzzle.numSolved()==7);
 
     // find 0       (0 is the remaining 6-element digit)
     for(auto const &pattern : puzzle.patterns)
@@ -219,16 +238,14 @@ int solve(Puzzle &puzzle)
         {
             if(!puzzle.string_to_number.contains(pattern))
             {
-                associate(puzzle,pattern,0);
+                puzzle.associate(pattern,0);
             }
         }
     }
-    assert(puzzle.number_to_string.size()==8);
-    assert(puzzle.string_to_number.size()==8);
+    assert(puzzle.numSolved()==8);
 
 
-// distinguish 2 and 5   (9 contains 5,  but not 2)
-
+    // find 2 and 5   (9 contains 5,  but not 2)
     for(auto const &pattern : puzzle.patterns)
     {
         if(   pattern.size() == 5)
@@ -237,29 +254,19 @@ int solve(Puzzle &puzzle)
             {
                 if(contains(puzzle.number_to_string[9],  pattern ))
                 {
-                    associate(puzzle,pattern,5);
+                    puzzle.associate(pattern,5);
                 }
                 else 
                 {
-                    associate(puzzle,pattern,2);
+                    puzzle.associate(pattern,2);
                 }
             }
         }
     }
-    assert(puzzle.number_to_string.size()==10);
-    assert(puzzle.string_to_number.size()==10);
+    assert(puzzle.numSolved()==10);
 
 
-    int answer{};
-
-    for(auto const &output : puzzle.outputs)
-    {
-        answer*=10;
-        answer+=puzzle.string_to_number[output];
-    }
-
-    return answer;
-
+    return puzzle.answer();
 }
 
 
@@ -274,8 +281,6 @@ void part2(std::vector<Puzzle> &puzzles)
     }
 
     std::cout << "Part 2 : " << sum << "\n";
-
-
 }
 
 
