@@ -22,6 +22,8 @@ struct Floor
 {
     uint8_t height;
     uint8_t basin_;
+    bool    lowPoint;
+
 
     bool wall() const
     {
@@ -59,6 +61,7 @@ void part1(Cave  &cave)
                 count++;
                 part1+=element.height+1;
                 element.basin_=count;
+                element.lowPoint=true;
             }
         }
     }
@@ -137,6 +140,18 @@ void part2(Cave  &cave)
         std::cout << '\n';
     }
 
+
+    for(auto &row : cave)
+    {
+        for(auto &floor : row)
+        {
+            std::cout << std::format("{}", floor.wall() ? char(219) : (floor.lowPoint ? '.' : ' '));
+
+        }
+        std::cout << '\n';
+    }
+
+
     assert(count[0]==0);
 
 
@@ -187,3 +202,6 @@ catch(std::exception const &e)
 {
     std::cout << e.what() << '\n';
 }
+
+
+
