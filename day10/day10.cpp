@@ -37,7 +37,7 @@ std::map<char,char> closer
     {'<','>'}
 };
 
-std::map<char,int> score
+std::map<char,int> corruptScore
 {
     {')',    3},
     {']',   57},
@@ -46,14 +46,25 @@ std::map<char,int> score
 };
 
 
-
-void part1(std::vector<std::string> const &lines)
+std::map<char,int> incompleteScore
 {
-    auto totalScore{0};
+    {')',    1},
+    {']',    2},
+    {'}',    3},
+    {'>',    4}
+};
+
+
+
+void score(std::vector<std::string> const &lines)
+{
+    auto                    part1Score{0};
+    std::vector<int64_t>    part2Scores;
 
     for(auto line : lines)
     {
         std::stack<char> stack;
+        bool             corrupt{false};
 
         for(auto c : line)
         {
@@ -69,15 +80,35 @@ void part1(std::vector<std::string> const &lines)
                 }
                 else
                 {
-                    totalScore+=score[c];
+                    part1Score+=corruptScore[c];
+                    corrupt=true;
                     break;
                 }
             }
         }
+
+        if(!corrupt)
+        {
+            int64_t part2Score{};
+
+            while(!stack.empty())
+            {
+                part2Score*=5;
+                part2Score+= incompleteScore[ closer[stack.top()]];
+                stack.pop();
+            }
+
+            part2Scores.push_back(part2Score);
+        }
     }
 
 
-    std::cout << "Part 1 " << totalScore << "\n";
+    std::cout << "Part 1 " << part1Score << "\n";
+
+    std::ranges::sort(part2Scores);
+
+
+    std::cout << "Part 2 " << part2Scores[part2Scores.size()/2] << "\n";
 }
 
 
@@ -92,7 +123,7 @@ try
         lines.push_back(line);
     }
 
-    part1(lines);
+    score(lines);
  
     return 0;
 }
