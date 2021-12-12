@@ -8,6 +8,9 @@
 #include <sstream>
 #include <format>
 #include <string>
+#include <chrono>
+#include <thread>
+using namespace std::literals;
 
 
 using namespace std::literals;
@@ -15,19 +18,57 @@ using namespace std::literals;
 
 extern std::istringstream data;
 
-
-class Grid
+class Console
 {
     HANDLE console;
+    DWORD  originalMode{};
 
 public:
 
-    Grid(std::istream &data)   : console{GetStdHandle(STD_OUTPUT_HANDLE )}
+    Console() : console{GetStdHandle(STD_OUTPUT_HANDLE )}
     {
-        DWORD mode{};
-        GetConsoleMode(console,&mode),
-        SetConsoleMode(console, mode|ENABLE_VIRTUAL_TERMINAL_PROCESSING );
-        cls();
+        GetConsoleMode(console,&originalMode),
+        SetConsoleMode(console, originalMode|ENABLE_VIRTUAL_TERMINAL_PROCESSING );
+    }
+
+    ~Console()
+    {
+        std::cout << "\x1b[!p";
+        SetConsoleMode(console, originalMode);
+    }
+
+
+    void clear()
+    {
+        std::cout << "\x1b[2J";
+    }
+
+    void goTo(int row, int column)
+    {
+        std::cout << std::format("\x1b[{};{}H",row,column);
+    }
+
+    void grey(int percentBrightness)
+    {
+        auto rgb = 255*percentBrightness/100;
+
+        std::cout <<  std::format("\x1b[38;2;{};{};{}m", rgb,rgb,rgb);
+    }
+
+
+};
+
+
+
+class Grid
+{
+    Console console;
+
+public:
+
+    Grid(std::istream &data)   
+    {
+        console.clear();
 
         for(int r=0;r<10;r++)
         {
@@ -42,40 +83,22 @@ public:
     }
 
 
-    void cls()
-    {
-        std::cout << "\x1b[2J";
-    }
-
-    auto colour(char c)
-    {
-        return std::format("\x1b[38;2;{};{};{}m", 255*c/10,255*c/10,255*c/10);
-    }
-
-    auto coloured(char c)
-    {
-        if(c==0)
-        {
-            return std::format("{}{}",colour(10),char(219));
-        }
-        {
-            return std::format("{}{}",colour(c),char(c+'0'));
-        }
-    }
-
     void show()
     {
-        SetConsoleCursorPosition(console,{0,0});
-        for(int r=0;r<10;r++)
+        console.goTo(0,0);
+        for(int row=0;row<10;row++)
         {
-            for(int c=0;c<10;c++)
+            for(int column=0;column<10;column++)
             {
-                std::cout << coloured(grid[r][c]);
+                auto octopus = grid[row][column];
+
+                console.grey ( octopus ? octopus * 10 : 100 );
+
+                std::cout << static_cast<char>( octopus ? (octopus + '0') : 219);
             }
             std::cout << "           \n";
         }
         std::cout << '\n';
-        Sleep(100);
     }
 
 
@@ -156,16 +179,13 @@ try
         flashes=grid.step();
         totalFlashes+=flashes;
         grid.show();
+        std::this_thread::sleep_for(20ms);
 
         step++;
         
         if(step==100)
         {
             part1=totalFlashes;
-        }
-
-        if(flashes==100)
-        {
         }
 
     }while(flashes<100);

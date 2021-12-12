@@ -13,7 +13,7 @@ R"(5483143223
 5283751526
 )"};
 
-std::istringstream realdata{
+std::istringstream data{
 R"(5212166716
 1567322581
 2268461548
@@ -27,7 +27,7 @@ R"(5212166716
 )"};
 
 
-std::istringstream data{
+std::istringstream fundata{
 R"(0000000000
 0000000000
 0000000000
