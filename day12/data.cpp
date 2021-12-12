@@ -1,6 +1,6 @@
 #include <sstream>
 
-std::istringstream mine{
+std::string mine{
 R"(
 yb-start
 de-vd
@@ -29,7 +29,7 @@ end-OC
 )"};
 
 
-std::istringstream paths_10{
+std::string paths_10_36{
 R"(
 start-A
 start-b
@@ -41,7 +41,7 @@ b-end
 )"};
 
 
-std::istringstream paths_19{
+std::string paths_19_103{
 R"(
 dc-end
 HN-start
@@ -56,7 +56,7 @@ kj-dc
 )"};
 
 
-std::istringstream paths_226{
+std::string paths_226_3509{
 R"(
 fs-end
 he-DX
@@ -79,4 +79,4 @@ start-RW
 )"};
 
 
-std::istringstream &data{mine};
+std::string &data{mine};

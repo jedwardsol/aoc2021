@@ -17,7 +17,7 @@
 using namespace std::literals;
 #include "include/thrower.h"
 
-extern std::istringstream &data;
+extern std::string &data;
 
 
 class Cave
@@ -29,11 +29,15 @@ public:
         throw_runtime_error("Default constructed cave");
     }
 
-    Cave(std::string const &name)
+    Cave(std::string const &name) : name{name}
     {
         if(name=="end")
         {
             type=Type::end;
+        }
+        else if(name=="start")
+        {
+            type=Type::start;
         }
         else if(std::islower(name[0]))
         {
@@ -54,6 +58,10 @@ public:
         cave2.neighbours.push_back(&cave1);
     }
 
+    auto getCount()
+    {
+        return visitedCount;
+    }
 
     void visit1()
     {
@@ -63,39 +71,103 @@ public:
         {
             return;
         }
-        else if(type==Type::little)
-        {
-            visited=true;
-        }
 
         for(auto neighbour:neighbours)
         {
-            if(!neighbour->visited)
+            if(neighbour->type == Type::start)
+            {
+                continue;
+            }
+
+            if(    neighbour->type       != Type::little
+               ||  neighbour->getCount() == 0)
             {
                 neighbour->visit1();
             }
         }
 
-        visited=false;
+        visitedCount--;
     }
 
-    auto getCount()
+
+    bool noneHaveBeenVistedTwiceYet(std::vector<Cave*> &path)
     {
-        return visitedCount;
+        for(auto cave : path)
+        {
+            if(    cave->type       == Type::little
+               &&  cave->getCount() == 2)
+            {
+                return false;
+            }
+        }
+
+        return true;
     }
+
+
+    void visit2()
+    {
+        std::vector<Cave*> path;
+
+        visit2(path);
+    }
+
+    void visit2(std::vector<Cave*> &path)
+    {
+        visitedCount++;
+        path.push_back(this);
+
+
+        if(type==Type::end)
+        {
+/*
+            std::string comma;        
+
+            for(auto cave : path)
+            {
+                std::cout << comma << cave->name;
+                comma=',';
+            }
+            std::cout << '\n';
+*/
+            path.pop_back();
+            return;
+        }
+
+        for(auto neighbour:neighbours)
+        {
+            if(neighbour->type == Type::start)
+            {
+                continue;
+            }
+
+            if(    neighbour->type         != Type::little
+               ||  neighbour->getCount()   == 0
+               ||  noneHaveBeenVistedTwiceYet(path))
+            {
+                neighbour->visit2(path);
+            }
+        }
+
+        path.pop_back();
+        visitedCount--;
+    }
+
 
 
 private:
 
     enum class Type
     {
+        start,
         end,
         big,
         little
     };
 
+    std::string         name;
     Type                type;
-    bool                visited{};
+
     int                 visitedCount{};
     std::vector<Cave*>  neighbours;
 
@@ -105,11 +177,14 @@ private:
 
 auto readCaves()
 {
+    std::istringstream              stream{data};
+    
     std::map<std::string,Cave>      caves;
     std::string                     line;
+    
 
-
-    while(std::getline(data,line))
+    
+    while(std::getline(stream,line))
     {
         if(!line.empty())
         {
@@ -123,7 +198,6 @@ auto readCaves()
             caves.insert(std::make_pair(cave2, Cave{cave2}));
 
             Cave::join(caves[cave1],caves[cave2]);                
-
         }
     }
 
@@ -135,13 +209,15 @@ try
 {
         
     auto      part1{readCaves()};
-    auto      part2{part1};
+    auto      part2{readCaves()};
 
     part1["start"].visit1();
+    part2["start"].visit2();
 
     std::cout << "Part 1 : " << part1["end"].getCount() << "\n";
     std::cout << "Part 2 : " << part2["end"].getCount() << "\n";
 
+    assert(part1["end"].getCount() == 4411);
 
     return 0;
 }
