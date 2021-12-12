@@ -18,10 +18,17 @@ extern std::istringstream data;
 
 class Grid
 {
+    HANDLE console;
+
 public:
 
-    Grid(std::istream &data)
+    Grid(std::istream &data)   : console{GetStdHandle(STD_OUTPUT_HANDLE )}
     {
+        DWORD mode{};
+        GetConsoleMode(console,&mode),
+        SetConsoleMode(console, mode|ENABLE_VIRTUAL_TERMINAL_PROCESSING );
+        cls();
+
         for(int r=0;r<10;r++)
         {
             std::string line;
@@ -34,19 +41,41 @@ public:
         }
     }
 
+
+    void cls()
+    {
+        std::cout << "\x1b[2J";
+    }
+
+    auto colour(char c)
+    {
+        return std::format("\x1b[38;2;{};{};{}m", 255*c/10,255*c/10,255*c/10);
+    }
+
+    auto coloured(char c)
+    {
+        if(c==0)
+        {
+            return std::format("{}{}",colour(10),char(219));
+        }
+        {
+            return std::format("{}{}",colour(c),char(c+'0'));
+        }
+    }
+
     void show()
     {
-        SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE ),{0,0});
+        SetConsoleCursorPosition(console,{0,0});
         for(int r=0;r<10;r++)
         {
             for(int c=0;c<10;c++)
             {
-                std::cout << (char)(grid[r][c]+'0');
+                std::cout << coloured(grid[r][c]);
             }
             std::cout << "           \n";
         }
         std::cout << '\n';
-        Sleep(50);
+        Sleep(100);
     }
 
 
