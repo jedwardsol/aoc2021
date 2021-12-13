@@ -29,11 +29,6 @@ struct Floor
     {
         return height==9;
     }
-
-    bool basin() const
-    {
-        return wall() ? 0 : basin_;
-    }
 };
 
 using Cave=std::array<std::array<Floor,102>,102>;
@@ -119,6 +114,18 @@ void part2(Cave  &cave)
                 }
             }
         }
+
+
+        for(auto &row : cave)
+        {
+            for(auto &floor : row)
+            {
+                std::cout << std::format("{}", floor.wall() ? char(219) : (floor.lowPoint ? '.' : char(' '+!floor.basin_)));
+            }
+            std::cout << '\n';
+        }
+
+
     } while(flooding);
 
     std::cout << passes << '\n';
@@ -129,15 +136,11 @@ void part2(Cave  &cave)
     {
         for(auto &floor : row)
         {
-            std::cout << std::format("{}", char(' '+floor.basin_));
-
             if(!floor.wall())
             {
                 count[floor.basin_]++;
             }
-
         }
-        std::cout << '\n';
     }
 
 
@@ -145,8 +148,7 @@ void part2(Cave  &cave)
     {
         for(auto &floor : row)
         {
-            std::cout << std::format("{}", floor.wall() ? char(219) : (floor.lowPoint ? '.' : ' '));
-
+            std::cout << std::format("{}", floor.wall() ? char(219) : (floor.lowPoint ? '.' : char(' '+floor.basin_)));
         }
         std::cout << '\n';
     }
