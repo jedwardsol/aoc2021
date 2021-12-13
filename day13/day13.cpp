@@ -20,6 +20,7 @@ using namespace std::literals;
 
 extern std::istringstream &data;
 
+constexpr auto block = static_cast<char>(219);
 
 struct Pixel
 {
@@ -39,11 +40,6 @@ struct Fold
 };
 
 
-/*
-9,0
-
-fold along y=7
-*/
 
 auto parseInput()
 {
@@ -106,13 +102,10 @@ void trim(std::vector<std::string> &grid,size_t maxRow, size_t maxColumn)
 
 void draw(std::vector<std::string> const &grid)
 {
-    std::cout << std::format("height={} width={}\n",grid.size(), grid[0].size());
     for(auto row : grid)
     {
-        std::cout << row << "|\n";
+        std::cout << row << '\n';
     }
-
-    std::cout << "\n\n";
 }
 
 auto count(std::vector<std::string> const &grid)
@@ -121,7 +114,7 @@ auto count(std::vector<std::string> const &grid)
 
     for(auto row : grid)
     {
-        count+=std::ranges::count_if(row, [](auto c) { return c=='#';});
+        count+=std::ranges::count_if(row, [](auto c) { return c==block;});
     }
 
     return count;
@@ -143,9 +136,9 @@ void fold(std::vector<std::string> &grid, Fold const &fold)
 
             for(auto column = 0 ; column < grid[top].size(); column++)
             {
-                if(grid[bottom][column] == '#')
+                if(grid[bottom][column] == block)
                 {
-                    grid[top][column]='#';
+                    grid[top][column]=block;
                 }
             }
         }
@@ -163,9 +156,9 @@ void fold(std::vector<std::string> &grid, Fold const &fold)
                 auto const left  = fold.offset - 1 - pixel;
                 auto const right = fold.offset + 1 + pixel;
 
-                if(row[right] == '#')
+                if(row[right] == block)
                 {
-                    row[left]='#';
+                    row[left]=block;
                 }
             }
 
@@ -189,7 +182,7 @@ try
         maxColumn=std::max(maxColumn,pixel.column);
         maxRow   =std::max(maxRow,   pixel.row);
 
-        grid[pixel.row][pixel.column]='#';
+        grid[pixel.row][pixel.column]=block;
     }
 
     trim(grid,maxRow,maxColumn);
