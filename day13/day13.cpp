@@ -132,15 +132,20 @@ void fold(std::vector<std::string> &grid, Fold const &fold)
 {
     if(fold.axis == Fold::Axis::horizontal)
     {
-        for(auto row=0;row < fold.offset; row++)
-        {
-            auto const mirrorRow = grid.size()-row-1;
+        auto const height = std::min( fold.offset,   grid.size()-fold.offset-1);
 
-            for(auto column = 0 ; column < grid[row].size(); column++)
+        for(auto pixel = 0 ; pixel < height; pixel++)
+        {
+            auto const top    = fold.offset - 1 - pixel;
+            auto const bottom = fold.offset + 1 + pixel;
+
+            assert(grid[top].size() == grid[bottom].size());
+
+            for(auto column = 0 ; column < grid[top].size(); column++)
             {
-                if(grid[mirrorRow][column] == '#')
+                if(grid[bottom][column] == '#')
                 {
-                    grid[row][column]='#';
+                    grid[top][column]='#';
                 }
             }
         }
@@ -149,8 +154,7 @@ void fold(std::vector<std::string> &grid, Fold const &fold)
     }
     else
     {
-        auto width = std::min( fold.offset,   grid[0].size()-fold.offset-1);
-
+        auto const width = std::min( fold.offset,   grid[0].size()-fold.offset-1);
 
         for(auto &row : grid)
         {
@@ -191,16 +195,13 @@ try
     trim(grid,maxRow,maxColumn);
     assert(count(grid)==pixels.size());
 
-// Part1
+    for(auto const &fold : folds)
+    {
+        ::fold(grid, fold);
+        std::cout << "Pixels : " << count(grid) << '\n';
+    }
 
     draw(grid);
-    fold(grid, folds[0]);
-    draw(grid);
-    std::cout << "Part 1 : " << count(grid) << '\n';
-
-
-//    fold(grid, folds[1]);
-//    draw(grid);
 
     return 0;
 }
