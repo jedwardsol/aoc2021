@@ -59,7 +59,6 @@ auto parseInput()
         }
         
         auto comma =line.find(',');
-        auto equals=line.find('=');
 
         if(comma != line.npos)
         {
@@ -73,6 +72,7 @@ auto parseInput()
         }
         else
         {
+            auto equals=line.find('=');
             assert(equals!=line.npos);
 
             auto offset   =std::stoi(line.substr(equals+1));    
@@ -125,7 +125,11 @@ void fold(std::vector<std::string> &grid, Fold const &fold)
 {
     if(fold.axis == Fold::Axis::horizontal)
     {
-        auto const height = std::min( fold.offset,   grid.size()-fold.offset-1);
+        auto const topHeight    = fold.offset;
+        auto const bottomHeight = grid.size()-fold.offset-1;
+        auto const height       = std::min( topHeight, bottomHeight);
+
+        std::cout << std::format("Heights {} {}\n",topHeight,bottomHeight);
 
         for(auto pixel = 0 ; pixel < height; pixel++)
         {
@@ -147,7 +151,12 @@ void fold(std::vector<std::string> &grid, Fold const &fold)
     }
     else
     {
-        auto const width = std::min( fold.offset,   grid[0].size()-fold.offset-1);
+        auto const leftWidth  = fold.offset;
+        auto const rightWidth = grid[0].size()-fold.offset-1;
+        auto const width      = std::min( leftWidth, rightWidth);
+
+        std::cout << std::format("Widths {} {}\n",leftWidth,rightWidth);
+
 
         for(auto &row : grid)
         {
