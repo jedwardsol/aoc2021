@@ -363,6 +363,11 @@
   <ItemGroup>
     <ClCompile Include="data15.cpp" />
     <ClCompile Include="day15.cpp" />
+    <ClCompile Include="Dijkstra.cpp" />
+    <ClCompile Include="naive.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="day15.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

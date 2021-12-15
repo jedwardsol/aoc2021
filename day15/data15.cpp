@@ -1,13 +1,24 @@
 #include <sstream>
 
+
+
+
 std::istringstream unitData
 {R"(
 123
 234
-345
+348
 )"};
 
 
+std::istringstream hardData
+{R"(
+19111
+19191
+11191
+99991
+99991
+)"};  // len = 12
 
 std::istringstream testData
 {R"(

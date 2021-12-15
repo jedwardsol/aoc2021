@@ -17,16 +17,13 @@ using namespace std::literals;
 #include "include/thrower.h"
 #include "include/console.h"
 
-extern std::istringstream unitData;
-extern std::istringstream testData;
-extern std::istringstream realData;
-
-using Risk=int;
-using Cave= std::vector<std::vector<Risk>>;
+#include "day15.h"
 
 
 
-void print(auto const &v)
+
+
+void printSmall   (Cave const &v)
 {
     for(auto row : v)
     {
@@ -41,10 +38,10 @@ void print(auto const &v)
     std::cout << "\n";
 }
 
-void print2(auto const &v)
+void printExtended(Cave const &v)
 {
     auto const size=v.size();
-    auto const split=size/5;
+    auto const split=size/5 ? size/5 : 5;
 
     for(auto row =0; row<size;row++)
     {
@@ -71,44 +68,13 @@ void print2(auto const &v)
 }
 
 
-int downRightOnly(Cave  const &cave)
-{
-    auto const  size=static_cast<int>(cave.size());
-    auto const  last=size-1;
-
-    auto        total(std::vector(size, std::vector(size,0)));
-
-    total[last][last]=cave[last][last];
-
-    for(auto row=last-1; row>=0;row--)
-    {
-        total[row][last] = cave[row][last] + total[row+1][last];
-    }
-
-    for(auto col=last-1; col>=0;col--)
-    {
-        total[last][col] = cave[last][col] + total[last][col+1];
-    }
-
-
-    for(auto row=last-1; row>=0;row--)
-    {
-        for(auto col=last-1; col>=0;col--)
-        {
-            total[row][col] = cave[row][col] + std::min(total[row  ][col+1],
-                                                        total[row+1][col  ]);
-        }
-    }
-
-//  print(cave);
-//  print(total);
-
-    return total[0][0]-cave[0][0];
-}
 
 
 auto readCave(std::istringstream &data)
 {
+    data.clear();
+    data.seekg(0);
+
     Cave        cave;
     std::string line;
 
@@ -137,7 +103,7 @@ auto readCave(std::istringstream &data)
     return cave;
 }
 
-auto extend(Cave &littleCave)
+auto extend(Cave const &littleCave)
 {
     auto const  littleSize=static_cast<int>(littleCave.size());
     auto const  bigSize   =littleSize*5;
@@ -168,23 +134,42 @@ auto extend(Cave &littleCave)
 int main()
 try
 {
-    auto unit=readCave(unitData);
-    auto test=readCave(testData);
-    auto real=readCave(realData);
+/*
+    {
+        auto const unitCave         =readCave(unitData);
+        auto const extendedUnitCave =extend(unitCave);
 
-    assert(downRightOnly(test) == 40);
-    std::cout << "Part 1 : " << downRightOnly(real) << "\n";
+        printExtended(unitCave);
+        printExtended(extendedUnitCave);
+    }
+    {
+        auto const hardCave=readCave(hardData);
+
+        assert(downRightOnly(hardCave)          >  12);
+        assert(Dijkstra(hardCave)              ==  12);
+    }
+*/
 
 
-    auto bigUnit=extend(unit);
-    auto bigTest=extend(test);
-    auto bigReal=extend(real);
+    {
+        auto const testCave         =readCave(testData);
+        auto const extendedTestCave =extend(testCave);
 
-    print2(bigUnit);
+        assert(downRightOnly(testCave)         ==  40);
+        assert(Dijkstra(testCave)              ==  40);
+
+        assert(downRightOnly(extendedTestCave) == 315);
+        assert(Dijkstra(extendedTestCave)      == 315);
+    }
 
 
-    assert(downRightOnly(bigTest) == 315);
-    std::cout << "Part 2 : " << downRightOnly(bigReal) << "\n";
+
+    auto const realCave         =readCave(realData);
+    auto const extendedRealCave =extend(realCave);
+
+
+    std::cout << "Part 1 : " << Dijkstra(realCave) << "\n";
+    std::cout << "Part 2 : " << Dijkstra(extendedRealCave) << "\n";
 
     return 0;
 }
