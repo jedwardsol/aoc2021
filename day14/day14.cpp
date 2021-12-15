@@ -29,7 +29,7 @@ using Rules=std::map<Pair,char>;
 
 struct Polymer
 {
-    std::string                 original;     // only really need to remember 1st and last since they're all that's needed to count accurately
+    char                        last;
     std::map<Pair,int64_t>      pairs;
 
     auto getCounts() const
@@ -39,30 +39,9 @@ struct Polymer
         for(auto const &[pair,count] : pairs)
         {
             counts[pair.first] +=count;
-            counts[pair.second]+=count;
         }
 
-        for(auto &[c,count] : counts)
-        {
-            if(   c == original.front()
-               && c == original.back())
-            {
-                // double counted,  except twice;
-                count = 2+(count-2)/2;
-            }
-            else if(   c == original.front()
-                    || c == original.back())
-            {
-                // double counted,  except once;
-                count = 1+(count-1)/2;
-            }
-            else
-            {
-                // double counted
-
-                count /= 2;
-            }
-        }
+        counts[last]++;
 
         return counts;
     }
@@ -72,7 +51,7 @@ struct Polymer
 
 Polymer polymerise(Polymer const &polymer, Rules &rules)
 {
-    Polymer result{polymer.original};
+    Polymer result{polymer.last};
 
     for(auto [pair,count] : polymer.pairs)
     {
@@ -90,7 +69,7 @@ Polymer polymerise(Polymer const &polymer, Rules &rules)
 
 auto parsePolymer(std::string const &line)
 {
-    Polymer polymer{line};
+    Polymer polymer{line.back()};
 
     for(int i=0;i<line.size()-1;i++)
     {
@@ -144,7 +123,7 @@ void test1()
 
         assert(rules1.size()                           == 16);
 
-        assert(polymer1.original                       == "NNCB"s);
+        assert(polymer1.last                           == 'B');
         assert(polymer1.pairs.size()                   == 3);
         assert(polymer1.pairs[std::make_pair('N','N')] == 1);
         assert(polymer1.pairs[std::make_pair('N','C')] == 1);
@@ -159,7 +138,7 @@ void test1()
         auto result1            = polymerise(polymer1,rules1);     //  NNCB  -> NCNBCHB
         auto counts1_1          = result1.getCounts();
 
-        assert(result1.original                        == "NNCB"s);
+        assert(result1.last                            == 'B');
         assert(result1.pairs.size()                    == 6);
         assert(result1.pairs[std::make_pair('N','C')]  == 1);
         assert(result1.pairs[std::make_pair('C','N')]  == 1);
@@ -181,7 +160,7 @@ void test1()
 
         assert(rules2.size()                           == 16);
 
-        assert(polymer2.original                       == "NNCBN"s);
+        assert(polymer2.last                           == 'N');
         assert(polymer2.pairs.size()                   == 4);
         assert(polymer2.pairs[std::make_pair('N','N')] == 1);
         assert(polymer2.pairs[std::make_pair('N','C')] == 1);
@@ -197,7 +176,7 @@ void test1()
         auto result2            = polymerise(polymer2,rules2);     //  NNCBN -> NCNBCHBBN             
         auto counts2_1          = result2.getCounts();
 
-        assert(result2.original                        == "NNCBN"s);
+        assert(result2.last                            == 'N');
         assert(result2.pairs.size()                    == 8);
 
         assert(result2.pairs[std::make_pair('N','C')]  == 1);
