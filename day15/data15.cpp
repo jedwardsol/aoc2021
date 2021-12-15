@@ -1,5 +1,13 @@
 #include <sstream>
 
+std::istringstream unitData
+{R"(
+123
+234
+345
+)"};
+
+
 
 std::istringstream testData
 {R"(
