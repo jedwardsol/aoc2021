@@ -8,7 +8,7 @@ using Cave= std::vector<std::vector<Risk>>;
 
 
 int downRightOnly (Cave  const &cave);
-int Dijkstra      (Cave  const &cave);
+int Dijkstra      (Cave  const &cave, bool save=false);
 
 
 

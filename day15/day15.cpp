@@ -169,7 +169,7 @@ try
 
 
     std::cout << "Part 1 : " << Dijkstra(realCave) << "\n";
-    std::cout << "Part 2 : " << Dijkstra(extendedRealCave) << "\n";
+    std::cout << "Part 2 : " << Dijkstra(extendedRealCave,true) << "\n";
 
     return 0;
 }

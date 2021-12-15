@@ -4,6 +4,7 @@
 
 #include <vector>
 #include <queue>
+#include <fstream>
 
 #include <limits>
 
@@ -14,20 +15,24 @@
 #include "day15.h"
 
 
-constexpr auto infinity = std::numeric_limits<int>::max();
+constexpr auto infinity = std::numeric_limits<Risk>::max();
 
 struct Location
 {
     int row;
     int column;
+
+    bool operator==(Location const&rhs) const noexcept = default;
+
 };
 
 struct Node
 {
-    int         distance{infinity};
+    Risk        totalRisk{infinity};
     Location    location{};
-//  Location    previous{};         // only needed if we need the route
+    Location    previous{};         // only needed if we need the route
     bool        visited{false};
+    bool        onPath{false};
 };
 
 
@@ -36,7 +41,7 @@ struct NodeCompare
 {
     bool operator()(Node const &lhs, Node const &rhs)
     {
-        return lhs.distance > rhs.distance;
+        return lhs.totalRisk > rhs.totalRisk;
     }
 } ;
 
@@ -71,7 +76,7 @@ auto getNeighbours(int size, Location current)
 }
 
 
-int Dijkstra(Cave  const &cave)
+int Dijkstra(Cave  const &cave, bool save)
 {
     auto const      size=static_cast<int>(cave.size());
     auto            queue{PriorityQueue{}};
@@ -86,7 +91,7 @@ int Dijkstra(Cave  const &cave)
         }
     }
 
-    graph[0][0].distance=0;
+    graph[0][0].totalRisk=0;
     queue.push(graph[0][0]);
 
     while(   !graph[size-1][size-1].visited
@@ -108,19 +113,82 @@ int Dijkstra(Cave  const &cave)
         {
             if(! graph[neighbour.row][neighbour.column].visited)
             {
-                auto newDistance = current.distance + cave[neighbour.row][neighbour.column];
+                auto newTotalRisk = current.totalRisk + cave[neighbour.row][neighbour.column];
 
-                if(newDistance < graph[neighbour.row][neighbour.column].distance)
+                if(newTotalRisk < graph[neighbour.row][neighbour.column].totalRisk)
                 {
-                    graph[neighbour.row][neighbour.column].distance = newDistance;
-//                  graph[neighbour.row][neighbour.column].previous = current.location;
+                    graph[neighbour.row][neighbour.column].totalRisk = newTotalRisk;
+                    graph[neighbour.row][neighbour.column].previous = current.location;
                     queue.push(graph[neighbour.row][neighbour.column]);
                 }
             }
         }
     }
 
-    return graph[size-1][size-1].distance;
+
+    if(save)
+    {
+        Location  walk={size-1,size-1};
+
+        while(walk != Location{0,0})
+        {
+            graph[walk.row][walk.column].onPath=true;
+            walk=graph[walk.row][walk.column].previous;
+        }
+
+        std::ofstream image{"cave.pgm"};
+
+        image << "P2\n";
+        image << size << ' ' << size << "\n";
+        image << "255\n";
+
+        auto maxRisk=0;
+
+        for(auto const &row : graph)
+        {
+            for(auto const &node : row)
+            {
+                maxRisk=std::max(maxRisk, node.totalRisk);
+            }
+            image << "\n";
+        }
+
+
+        for(auto const &row : graph)
+        {
+            for(auto const &node : row)
+            {
+                int colour{};
+
+                if(!node.visited)
+                {
+                    colour=0;
+                }
+                else if(node.onPath)
+                {
+                    colour=255;
+                }
+                else
+                {
+                    colour = maxRisk-node.totalRisk;
+
+                    colour *= 255;
+                    colour /= maxRisk;
+
+                    colour = std::min(colour,255);
+                }
+
+                image << colour << ' ';
+            }
+            image << "\n";
+        }
+
+
+
+    }
+
+
+    return graph[size-1][size-1].totalRisk;
 }
 
 
