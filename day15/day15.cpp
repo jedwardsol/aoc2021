@@ -20,9 +20,6 @@ using namespace std::literals;
 #include "day15.h"
 
 
-
-
-
 void printSmall   (Cave const &v)
 {
     for(auto row : v)
@@ -131,6 +128,34 @@ auto extend(Cave const &littleCave)
 }
 
 
+auto block(Cave const &cave)
+{
+    auto const  size  =static_cast<int>(cave.size());
+    auto const  middle=size/2;
+    auto const  blockSize=150;
+
+    auto        result{cave};
+
+    for(int row= 30; row < size; row+=60 )
+    {
+        for(int col= 0; col < size-50; col++)
+        {
+            result[row][col]=100000;
+        }
+    }
+
+    for(int row= 60; row < size; row+=60 )
+    {
+        for(int col= size-1; col > 50; col--)
+        {
+            result[row][col]=100000;
+        }
+    }
+
+
+    return result;
+}
+
 int main()
 try
 {
@@ -167,9 +192,14 @@ try
     auto const realCave         =readCave(realData);
     auto const extendedRealCave =extend(realCave);
 
+    auto const blockedRealCave =block(extendedRealCave);
+
+
 
     std::cout << "Part 1 : " << Dijkstra(realCave) << "\n";
     std::cout << "Part 2 : " << Dijkstra(extendedRealCave,true) << "\n";
+
+    std::cout << "Part 2a: " << Dijkstra(blockedRealCave,true) << "\n";
 
     return 0;
 }

@@ -8,11 +8,13 @@
 
 #include <limits>
 
+#include <Windows.h>
 
 #include "include/thrower.h"
 #include "include/console.h"
 
 #include "day15.h"
+
 
 
 constexpr auto infinity = std::numeric_limits<Risk>::max();
@@ -45,7 +47,12 @@ struct NodeCompare
     }
 } ;
 
+using Graph         = std::vector<std::vector<Node>>;
 using PriorityQueue = std::priority_queue<Node,std::vector<Node>,NodeCompare>;
+
+
+void writePGM(Graph const &graph);
+void writeBMP(Graph const &graph);
 
 
 auto getNeighbours(int size, Location current)
@@ -80,7 +87,7 @@ int Dijkstra(Cave  const &cave, bool save)
 {
     auto const      size=static_cast<int>(cave.size());
     auto            queue{PriorityQueue{}};
-    auto            graph(std::vector(size, std::vector(size,Node{})));
+    Graph           graph(size, std::vector(size,Node{}));
 
 
     for(auto row=0;row<size;row++)
@@ -126,70 +133,148 @@ int Dijkstra(Cave  const &cave, bool save)
     }
 
 
+    Location  walk={size-1,size-1};
+
+    while(walk != Location{0,0})
+    {
+        graph[walk.row][walk.column].onPath=true;
+        walk=graph[walk.row][walk.column].previous;
+    }
+
     if(save)
     {
-        Location  walk={size-1,size-1};
-
-        while(walk != Location{0,0})
-        {
-            graph[walk.row][walk.column].onPath=true;
-            walk=graph[walk.row][walk.column].previous;
-        }
-
-        std::ofstream image{"cave.pgm"};
-
-        image << "P2\n";
-        image << size << ' ' << size << "\n";
-        image << "255\n";
-
-        auto maxRisk=0;
-
-        for(auto const &row : graph)
-        {
-            for(auto const &node : row)
-            {
-                maxRisk=std::max(maxRisk, node.totalRisk);
-            }
-            image << "\n";
-        }
-
-
-        for(auto const &row : graph)
-        {
-            for(auto const &node : row)
-            {
-                int colour{};
-
-                if(!node.visited)
-                {
-                    colour=0;
-                }
-                else if(node.onPath)
-                {
-                    colour=255;
-                }
-                else
-                {
-                    colour = maxRisk-node.totalRisk;
-
-                    colour *= 255;
-                    colour /= maxRisk;
-
-                    colour = std::min(colour,255);
-                }
-
-                image << colour << ' ';
-            }
-            image << "\n";
-        }
-
-
-
+        //writePGM(graph);
+        writeBMP(graph);
     }
 
 
     return graph[size-1][size-1].totalRisk;
 }
 
+/*
+
+void writePGM(Graph const &graph)
+{
+    auto const      size=static_cast<int>(graph.size());
 
 
+    std::ofstream image{"cave.pgm"};
+
+    image << "P2\n";
+    image << size << ' ' << size << "\n";
+    image << "255\n";
+
+    auto maxRisk=0;
+
+    for(auto const &row : graph)
+    {
+        for(auto const &node : row)
+        {
+            maxRisk=std::max(maxRisk, node.totalRisk);
+        }
+        image << "\n";
+    }
+
+
+    for(auto const &row : graph)
+    {
+        for(auto const &node : row)
+        {
+            int colour{};
+
+            if(!node.visited)
+            {
+                colour=0;
+            }
+            else if(node.onPath)
+            {
+                colour=255;
+            }
+            else
+            {
+                colour = maxRisk-node.totalRisk;
+
+                colour *= 255;
+                colour /= maxRisk;
+
+                colour = std::min(colour,255);
+            }
+
+            image << colour << ' ';
+        }
+        image << "\n";
+    }
+}
+*/
+
+
+void writeBMP(Graph const &graph)
+{
+    auto const      size=static_cast<int>(graph.size());
+
+    std::ofstream image{"cave.bmp", std::ios::binary|std::ios::out};
+
+
+    BITMAPFILEHEADER    fileHeader
+    {
+        'MB',
+        sizeof(fileHeader) + sizeof(BITMAPINFOHEADER ) + size*size*3,
+        0,0,
+        sizeof(fileHeader) + sizeof(BITMAPINFOHEADER ) 
+    };
+
+    BITMAPINFOHEADER      infoHeader
+    {
+        sizeof(BITMAPINFOHEADER ),
+        size,-size,
+        1,
+        24,
+        BI_RGB,
+        0,
+        3780,3780,
+        0,0,
+    };
+
+
+    image.write(reinterpret_cast<const char*>(&fileHeader),sizeof(fileHeader));
+    image.write(reinterpret_cast<const char*>(&infoHeader),sizeof(infoHeader));
+
+    auto maxRisk=0;
+
+    for(auto const &row : graph)
+    {
+        for(auto const &node : row)
+        {
+            if(node.totalRisk!=infinity)
+            {
+                maxRisk=std::max(maxRisk, node.totalRisk);
+            }
+        }
+    }
+
+
+    for(auto const &row : graph)
+    {
+        for(auto const &node : row)
+        {
+            struct Pixel
+            { uint8_t b,g,r;
+            } pixel;
+
+            if(!node.visited)
+            {
+                pixel={0,0,255};
+            }
+            else if(node.onPath)
+            {
+                pixel={100,255,100};
+            }
+            else
+            {
+                pixel.r = pixel.g = pixel.b = (maxRisk-node.totalRisk) * 255/maxRisk;
+            }
+
+            image.write(reinterpret_cast<const char*>(&pixel),sizeof(pixel));
+        }
+    }
+}
