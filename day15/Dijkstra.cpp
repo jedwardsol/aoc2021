@@ -231,7 +231,7 @@ void writeBMP(Graph const &graph)
         24,
         BI_RGB,
         0,
-        3780,3780,
+        0,0,
         0,0,
     };
 
@@ -239,18 +239,7 @@ void writeBMP(Graph const &graph)
     image.write(reinterpret_cast<const char*>(&fileHeader),sizeof(fileHeader));
     image.write(reinterpret_cast<const char*>(&infoHeader),sizeof(infoHeader));
 
-    auto maxRisk=0;
-
-    for(auto const &row : graph)
-    {
-        for(auto const &node : row)
-        {
-            if(node.totalRisk!=infinity)
-            {
-                maxRisk=std::max(maxRisk, node.totalRisk);
-            }
-        }
-    }
+    auto maxRisk=graph[size-1][size-1].totalRisk;
 
 
     for(auto const &row : graph)
@@ -268,6 +257,10 @@ void writeBMP(Graph const &graph)
             else if(node.onPath)
             {
                 pixel={100,255,100};
+            }
+            else if(node.totalRisk > maxRisk)
+            {
+                pixel={128,128,255};
             }
             else
             {
