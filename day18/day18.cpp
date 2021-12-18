@@ -18,6 +18,7 @@ using SnailNumber = std::string;
 
 const auto digits="0123456789";
 
+
 bool explode(SnailNumber &s)
 {
     int depth{};
@@ -98,6 +99,43 @@ bool split(SnailNumber &s)
 }
 
 
+void reduce(SnailNumber &s)
+{
+    bool didSomething{};
+
+    do
+    {
+        didSomething = explode(s);
+
+        if(!didSomething)
+        {
+            didSomething = split(s);
+        }
+
+    } while(didSomething);
+}
+
+SnailNumber add(SnailNumber const &lhs,SnailNumber const &rhs)
+{
+    auto sum = std::format("[{},{}]",lhs,rhs);
+    reduce(sum);
+    return sum;
+}
+
+SnailNumber sum(std::vector<SnailNumber> const &list)
+{
+    auto sum = list[0];
+
+    for(int i=1;i<list.size();i++)
+    {
+        sum = add(sum,list[i]);
+    }
+
+    return sum;
+}
+
+
+
 void testExplode()
 {
     auto test1   {SnailNumber{"[[[[[9,8],1],2],3],4]"}};
@@ -175,9 +213,50 @@ void testSplit()
     auto result2 {SnailNumber{"[[[[0,7],4],[[7,8],[0,[6,7]]]],[1,1]]"}};
     assert(split(test2));
     assert(test2==result2);
-
 }
 
+
+
+void testReduce()
+{
+    auto test1   {SnailNumber{"[[[[[4,3],4],4],[7,[[8,4],9]]],[1,1]]"}};
+    auto result1 {SnailNumber{"[[[[0,7],4],[[7,8],[6,0]]],[8,1]]"}};
+    reduce(test1);
+    assert(test1==result1);
+}
+
+
+void testAdd()
+{
+    { 
+        auto lhs     {SnailNumber{"[[[[4,3],4],4],[7,[[8,4],9]]]"}};
+        auto rhs     {SnailNumber{"[1,1]"}};
+        auto result1 {SnailNumber{"[[[[0,7],4],[[7,8],[6,0]]],[8,1]]"}};
+        auto sum     {add(lhs,rhs)};
+
+        assert(sum==result1);
+    }
+}
+
+
+void testSum()
+{
+    std::vector<SnailNumber> test1
+    {
+        "[1,1]",
+        "[2,2]",
+        "[3,3]",
+        "[4,4]",
+        "[5,5]",
+        "[6,6]"
+    };
+    auto result1 {SnailNumber{"[[[[5,0],[7,4]],[5,5]],[6,6]]"}};
+
+    auto sum1 = ::sum(test1);
+    assert(sum1==result1);
+
+
+}
 
 
 int main()
@@ -185,7 +264,9 @@ try
 {
     testExplode();
     testSplit();
-
+    testReduce();
+    testAdd();
+    testSum();
 
 }
 catch(std::exception const &e)
