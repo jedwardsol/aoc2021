@@ -105,6 +105,7 @@ class Packet
 
     uint64_t                value{};
     std::vector<Packet>     subpackets;
+    mutable bool            evaluated{};
 
 public:
 
@@ -136,9 +137,7 @@ public:
             {
                 // bit count case
                 auto const bitCount = bitStream.extractNumber(15);
-
-                auto subStream     = BitStream{bitStream.extractBits(bitCount)};
-
+                auto subStream      = BitStream{bitStream.extractBits(bitCount)};
 
                 while(!subStream.empty())
                 {
@@ -160,6 +159,8 @@ public:
 
     uint64_t    evaluate() const
     {
+        evaluated=true;
+
         uint64_t    result{};
 
         switch(type)
@@ -242,6 +243,30 @@ public:
 
         return sum;
     }
+
+    uint32_t unevaluated() const
+    {
+        uint32_t sum = !evaluated;
+
+        for(auto const &child : subpackets)
+        {
+            sum+=child.unevaluated();
+        }
+
+        return sum;
+    }
+
+    size_t maxChildren() const
+    {
+        auto max = subpackets.size();
+
+        for(auto const &child : subpackets)
+        {
+            max = std::max(max,child.maxChildren());
+        }
+
+        return max;
+    }
 };
 
 
@@ -252,8 +277,11 @@ try
     BitStream       bitStream{realData};
     Packet  const   packet   {bitStream};
     
+    std::cout << "max    : " << packet.maxChildren() << "\n";
+    std::cout << "un     : " << packet.unevaluated() << "\n";
     std::cout << "Part 1 : " << packet.sumVersions() << "\n";
     std::cout << "Part 2 : " << packet.evaluate()   << "\n";
+    std::cout << "un     : " << packet.unevaluated() << "\n";
 
     return 0;
 }
