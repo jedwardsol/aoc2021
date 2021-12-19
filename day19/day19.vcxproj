@@ -365,6 +365,10 @@
     <ClCompile Include="day19.cpp" />
     <ClCompile Include="testData.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="rotation.h" />
+    <ClInclude Include="rotations.h" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

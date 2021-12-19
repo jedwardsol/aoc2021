@@ -4,7 +4,6 @@
 #include <array>
 #include <vector>
 
-
 #include <iostream>
 #include <sstream>
 #include <format>
@@ -16,17 +15,12 @@
 using namespace std::literals;
 #include "include/thrower.h"
 
+#include "rotations.h"
+
 extern std::istringstream realData;
 extern std::istringstream testData;
 
-
-/*
---- scanner 0 ---
--676,-433,-499
-496,-527,-542
-*/
-
-using Beacon = std::array<int,3>;
+using Beacon = Location;
 
 struct Scanner
 {
