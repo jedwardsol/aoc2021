@@ -1,7 +1,12 @@
+// ugly!
+
+#define NOMINMAX
 #include <cassert>
 #include <cstdint>
 
 #include <string>
+#include <vector>
+#include <span>
 #include <cctype>
 
 #include <iostream>
@@ -13,7 +18,7 @@
 using namespace std::literals;
 #include "include/thrower.h"
 
-extern std::istringstream data;
+extern std::istringstream realData;
 
 
 constexpr int comma=-9;
@@ -253,6 +258,53 @@ SnailNumber sum(std::vector<SnailNumber> const &list)
     return sum;
 }
 
+int magnitude(std::span<int> thing)
+{
+    if(isDigit(thing[0]))
+    {
+        return thing[0];
+    }
+    else
+    {
+        assert(isOpen (thing.front()));
+        assert(isClose(thing.back()));
+
+        auto commaPos=thing.end();
+        int  depth=0;
+
+        for(auto i = thing.begin();
+                 i != thing.end();
+                 i++)
+        {
+            if(*i == open)
+            {
+                depth++;
+            }
+            else if(*i == close)
+            {
+                depth--;
+            }
+
+            if(depth == 1)
+            {
+                if(*i == comma)
+                {
+                    assert(commaPos == thing.end());
+                    commaPos=i;
+                }
+            }
+        }
+
+        assert(commaPos!=thing.end());
+
+        auto lhs = std::span<int>{thing.begin()+1,commaPos};
+        auto rhs = std::span<int>{commaPos+1, thing.end()-1};
+
+        return 3*magnitude(lhs) + 2*magnitude(rhs);
+    }
+
+}
+
 
 
 void testExplode()
@@ -350,10 +402,7 @@ void testAdd()
         auto sum     {add(lhs,rhs)};
         assert(sum==expected);
     }
-
-
 }
-
 
 void testSum()
 {
@@ -389,7 +438,14 @@ void testSum()
 
     auto sum2 = ::sum(test2);
     assert(sum2==result2);
+}
 
+
+void testMagnitude()
+{
+    auto test1 = from_string("[9,1]");
+    auto mag1  = magnitude(test1);
+    assert(mag1==29);
 
 
 }
@@ -402,6 +458,41 @@ try
     testReduce();
     testAdd();
     testSum();
+    testMagnitude();
+
+    std::vector<SnailNumber> homework;
+    std::string              line;
+
+    while(std::getline(realData,line))
+    {
+        if(!line.empty())
+        {
+            homework.push_back(from_string(line));
+        }
+    }
+
+    auto sum    = ::sum(homework);
+    std::cout << "Part 1 : " << magnitude(sum) << "\n";
+
+
+    auto biggest{0};
+
+    for(auto const &one : homework)
+    {
+        for(auto const &two : homework)
+        {
+            if(one != two)
+            {
+                auto sum    = ::add(one,two);
+                auto mag    = ::magnitude(sum);
+
+                biggest=std::max(biggest,mag) ;
+            }
+        }
+    }
+
+     std::cout << "Part 2 : " << biggest << "\n";
+
 
 }
 catch(std::exception const &e)
