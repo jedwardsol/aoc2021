@@ -1,6 +1,13 @@
 #pragma once
 #include "rotation.h"
 
+constexpr Rotation identity
+{{
+    { 1, 0, 0},
+    { 0, 1, 0},
+    { 0, 0, 1},
+}};
+
 constexpr Rotation rotateX
 {{
     { 1, 0, 0},
@@ -96,14 +103,17 @@ constexpr Die rotateDie(std::array<Rotation,N> const &rotations)
 }
 
 
+// keeping 1 to the right.
+constexpr std::array<Rotation,1>  rotate_132  {identity};                               //  1 to right, 3 on top, 2 to the back
+constexpr std::array<Rotation,1>  rotate_153  {rotateX};                                //  1 to right, 5 on top, 3 to the back
+constexpr std::array<Rotation,2>  rotate_145  {rotateX, rotateX};                       //  1 to right, 4 on top, 5 to the back
+constexpr std::array<Rotation,3>  rotate_124  {rotateX, rotateX, rotateX};              //  1 to right, 2 on top, 4 to the back
 
-
-constexpr std::array<Rotation,1>  rotate_153  {rotateX};                         //  1 to right, 5 on top, 3 to the back
-constexpr std::array<Rotation,2>  rotate_145  {rotateX, rotateX};                //  1 to right, 4 on top, 5 to the back
-constexpr std::array<Rotation,3>  rotate_124  {rotateX, rotateX, rotateX};       //  1 to right, 2 on top, 4 to the back
-
-
-
+// putting 2 to the right.
+constexpr std::array<Rotation,1>  rotate_236  {rotateY};                                //  2 to right, 3 on top, 6 to the back
+constexpr std::array<Rotation,2>  rotate_213  {rotateY, rotateX};                       //  2 to right, 1 on top, 3 to the back
+constexpr std::array<Rotation,3>  rotate_241  {rotateY, rotateX, rotateX};              //  2 to right, 4 on top, 1 to the back
+constexpr std::array<Rotation,4>  rotate_264  {rotateY, rotateX, rotateX, rotateX};     //  2 to right, 6 on top, 4 to the back
 
 
 
