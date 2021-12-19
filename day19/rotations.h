@@ -8,21 +8,21 @@ constexpr Rotation identity
     { 0, 0, 1},
 }};
 
-constexpr Rotation rotateX
+constexpr Rotation rotateX       // roll away
 {{
     { 1, 0, 0},
     { 0, 0,-1},
     { 0, 1, 0},
 }};
 
-constexpr Rotation rotateY
+constexpr Rotation rotateY      // spin clockwise   (looking down)
 {{
     { 0, 0, 1},
     { 0, 1, 0},
     {-1, 0, 0},
 }};
 
-constexpr Rotation rotateZ
+constexpr Rotation rotateZ      // roll to the left
 {{
     { 0,-1, 0},
     { 1, 0, 0},
@@ -119,4 +119,22 @@ constexpr std::array<Rotation,5>  rotate_315  {rotateZ, rotateZ, rotateZ, rotate
 constexpr std::array<Rotation,6>  rotate_321  {rotateZ, rotateZ, rotateZ, rotateX, rotateX, rotateX};   //  3 to right, 2 on top, 1 to the back
 
 
+// putting 4 to the right.
+constexpr std::array<Rotation,1>  rotate_412  {rotateZ};                                                //  4 to right, 1 on top, 2 to the back
+constexpr std::array<Rotation,2>  rotate_451  {rotateZ, rotateX};                                       //  4 to right, 5 on top, 1 to the back
+constexpr std::array<Rotation,3>  rotate_465  {rotateZ, rotateX, rotateX};                              //  4 to right, 6 on top, 5 to the back
+constexpr std::array<Rotation,4>  rotate_426  {rotateZ, rotateX, rotateX, rotateX};                     //  4 to right, 2 on top, 6 to the back
+
+
+// putting 5 to the right.
+constexpr std::array<Rotation,3>  rotate_531  {rotateY,rotateY,rotateY};                                //  5 to right, 3 on top, 1 to the back
+constexpr std::array<Rotation,4>  rotate_563  {rotateY,rotateY,rotateY, rotateX};                       //  5 to right, 6 on top, 3 to the back
+constexpr std::array<Rotation,5>  rotate_546  {rotateY,rotateY,rotateY, rotateX, rotateX};              //  5 to right, 4 on top, 6 to the back
+constexpr std::array<Rotation,6>  rotate_514  {rotateY,rotateY,rotateY, rotateX, rotateX, rotateX};     //  5 to right, 1 on top, 4 to the back
+                                                     
+// putting 6 to the right.
+constexpr std::array<Rotation,2>  rotate_642  {rotateZ, rotateZ};                                       //  6 to right, 4 on top, 2 to the back
+constexpr std::array<Rotation,3>  rotate_654  {rotateZ, rotateZ, rotateX};                              //  6 to right, 5 on top, 4 to the back
+constexpr std::array<Rotation,4>  rotate_635  {rotateZ, rotateZ, rotateX, rotateX};                     //  6 to right, 3 on top, 5 to the back
+constexpr std::array<Rotation,5>  rotate_623  {rotateZ, rotateZ, rotateX, rotateX, rotateX};            //  6 to right, 2 on top, 4 to the back
 

@@ -75,7 +75,20 @@ void testDie()
     constexpr  auto die_315 = rotateDie(rotate_315);
     constexpr  auto die_321 = rotateDie(rotate_321);
 
+    constexpr  auto die_412 = rotateDie(rotate_412);
+    constexpr  auto die_451 = rotateDie(rotate_451);
+    constexpr  auto die_465 = rotateDie(rotate_465);
+    constexpr  auto die_426 = rotateDie(rotate_426);
 
+    constexpr  auto die_531 = rotateDie(rotate_531);
+    constexpr  auto die_563 = rotateDie(rotate_563);
+    constexpr  auto die_546 = rotateDie(rotate_546);
+    constexpr  auto die_514 = rotateDie(rotate_514);
+
+    constexpr  auto die_642 = rotateDie(rotate_642);
+    constexpr  auto die_654 = rotateDie(rotate_654);
+    constexpr  auto die_635 = rotateDie(rotate_635);
+    constexpr  auto die_623 = rotateDie(rotate_623);
 
 
     printDie();
@@ -84,15 +97,34 @@ void testDie()
     printDie(die_153,   "           1 to right, 5 on top, 3 to the back");
     printDie(die_145,   "           1 to right, 4 on top, 5 to the back");
     printDie(die_124,   "           1 to right, 2 on top, 4 to the back");
+
     std::cout<<"---\n";
     printDie(die_236,   "           2 to right, 3 on top, 6 to the back");
     printDie(die_213,   "           2 to right, 1 on top, 3 to the back");
     printDie(die_241,   "           2 to right, 4 on top, 1 to the back");
     printDie(die_264,   "           2 to right, 6 on top, 6 to the back");
+
     std::cout<<"---\n";
     printDie(die_362,   "           3 to right, 6 on top, 2 to the back");
     printDie(die_356,   "           3 to right, 5 on top, 6 to the back");
     printDie(die_315,   "           3 to right, 1 on top, 5 to the back");
     printDie(die_321,   "           3 to right, 2 on top, 1 to the back");
 
+    std::cout<<"---\n";
+    printDie(die_412,   "           4 to right, 1 on top, 2 to the back");
+    printDie(die_451,   "           4 to right, 5 on top, 1 to the back");
+    printDie(die_465,   "           4 to right, 6 on top, 5 to the back");
+    printDie(die_426,   "           4 to right, 2 on top, 6 to the back");
+
+    std::cout<<"---\n";
+    printDie(die_531,   "           5 to right, 3 on top, 1 to the back");
+    printDie(die_563,   "           5 to right, 6 on top, 3 to the back");
+    printDie(die_546,   "           5 to right, 4 on top, 6 to the back");
+    printDie(die_514,   "           5 to right, 1 on top, 4 to the back");
+
+    std::cout<<"---\n";
+    printDie(die_642,   "           6 to right, 4 on top, 2 to the back");
+    printDie(die_654,   "           6 to right, 5 on top, 4 to the back");
+    printDie(die_635,   "           6 to right, 3 on top, 5 to the back");
+    printDie(die_623,   "           6 to right, 2 on top, 3 to the back");
 }
