@@ -82,59 +82,83 @@ constexpr Die initialDie =
 }};
 
 
-template <size_t N>
-constexpr Die rotateDie(std::array<Rotation,N> const &rotations)
+
+
+
+// keeping 1 to the right.
+constexpr Rotation  rotate_132  {identity};                                                     //  1 to right, 3 on top, 2 to the back
+constexpr Rotation  rotate_153  {rotateX};                                                      //  1 to right, 5 on top, 3 to the back
+constexpr Rotation  rotate_145  {rotateX * rotateX};                                            //  1 to right, 4 on top, 5 to the back
+constexpr Rotation  rotate_124  {rotateX * rotateX * rotateX};                                  //  1 to right, 2 on top, 4 to the back
+
+// putting 2 to the right.
+constexpr Rotation  rotate_236  {rotateY};                                                      //  2 to right, 3 on top, 6 to the back
+constexpr Rotation  rotate_213  {rotateX * rotateY};                                            //  2 to right, 1 on top, 3 to the back
+constexpr Rotation  rotate_241  {rotateX * rotateY * rotateY};                                  //  2 to right, 4 on top, 1 to the back
+constexpr Rotation  rotate_264  {rotateX * rotateX * rotateX * rotateY};                        //  2 to right, 6 on top, 4 to the back
+
+// putting 3 to the right.
+constexpr Rotation  rotate_362  {rotateZ * rotateZ * rotateZ};                                  //  3 to right, 6 on top, 2 to the back
+constexpr Rotation  rotate_356  {rotateX * rotateZ * rotateZ * rotateZ};                        //  3 to right, 5 on top, 6 to the back
+constexpr Rotation  rotate_315  {rotateX * rotateX * rotateZ * rotateZ * rotateZ};              //  3 to right, 1 on top, 5 to the back
+constexpr Rotation  rotate_321  {rotateX * rotateX * rotateX * rotateZ * rotateZ * rotateZ};    //  3 to right, 2 on top, 1 to the back
+
+// putting 4 to the right.
+constexpr Rotation  rotate_412  {rotateZ};                                                      //  4 to right, 1 on top, 2 to the back
+constexpr Rotation  rotate_451  {rotateX * rotateZ};                                            //  4 to right, 5 on top, 1 to the back
+constexpr Rotation  rotate_465  {rotateX * rotateX * rotateZ};                                  //  4 to right, 6 on top, 5 to the back
+constexpr Rotation  rotate_426  {rotateX * rotateX * rotateX * rotateZ};                        //  4 to right, 2 on top, 6 to the back
+
+// putting 5 to the right.
+constexpr Rotation  rotate_531  {rotateY * rotateY * rotateY};                                  //  5 to right, 3 on top, 1 to the back
+constexpr Rotation  rotate_563  {rotateX * rotateY * rotateY * rotateY};                        //  5 to right, 6 on top, 3 to the back
+constexpr Rotation  rotate_546  {rotateX * rotateX * rotateY * rotateY * rotateY};              //  5 to right, 4 on top, 6 to the back
+constexpr Rotation  rotate_514  {rotateX * rotateX * rotateX * rotateY * rotateY * rotateY};    //  5 to right, 1 on top, 4 to the back
+                                                     
+// putting 6 to the right.
+constexpr Rotation  rotate_642  {rotateZ * rotateZ};                                            //  6 to right, 4 on top, 2 to the back
+constexpr Rotation  rotate_654  {rotateX * rotateZ * rotateZ};                                  //  6 to right, 5 on top, 4 to the back
+constexpr Rotation  rotate_635  {rotateX * rotateX * rotateZ * rotateZ};                        //  6 to right, 3 on top, 5 to the back
+constexpr Rotation  rotate_623  {rotateX * rotateX * rotateX * rotateZ * rotateZ};              //  6 to right, 2 on top, 4 to the back
+
+
+constexpr Die rotateDie(Rotation const &rotation)
 {
     Die result{initialDie};
 
     for(auto &face : result)
     {
-        for(auto const &rotation : rotations)
-        {
-            face = rotation*face;
-        }
+        face = rotation*face;
     }
 
     return result;
 }
 
 
-// keeping 1 to the right.
-constexpr std::array<Rotation,1>  rotate_132  {identity};                                               //  1 to right, 3 on top, 2 to the back
-constexpr std::array<Rotation,1>  rotate_153  {rotateX};                                                //  1 to right, 5 on top, 3 to the back
-constexpr std::array<Rotation,2>  rotate_145  {rotateX, rotateX};                                       //  1 to right, 4 on top, 5 to the back
-constexpr std::array<Rotation,3>  rotate_124  {rotateX, rotateX, rotateX};                              //  1 to right, 2 on top, 4 to the back
+constexpr std::array<Rotation,24>  allRotations
+{{
+    rotate_132,
+    rotate_153,
+    rotate_145,
+    rotate_124,
 
-// putting 2 to the right.
-constexpr std::array<Rotation,1>  rotate_236  {rotateY};                                                //  2 to right, 3 on top, 6 to the back
-constexpr std::array<Rotation,2>  rotate_213  {rotateY, rotateX};                                       //  2 to right, 1 on top, 3 to the back
-constexpr std::array<Rotation,3>  rotate_241  {rotateY, rotateX, rotateX};                              //  2 to right, 4 on top, 1 to the back
-constexpr std::array<Rotation,4>  rotate_264  {rotateY, rotateX, rotateX, rotateX};                     //  2 to right, 6 on top, 4 to the back
+    rotate_236,
+    rotate_213,
+    rotate_241,
+    rotate_264,
 
+    rotate_362,
+    rotate_356,
+    rotate_315,
+    rotate_321,
 
-// putting 3 to the right.
-constexpr std::array<Rotation,3>  rotate_362  {rotateZ, rotateZ, rotateZ};                              //  3 to right, 6 on top, 2 to the back
-constexpr std::array<Rotation,4>  rotate_356  {rotateZ, rotateZ, rotateZ, rotateX};                     //  3 to right, 5 on top, 6 to the back
-constexpr std::array<Rotation,5>  rotate_315  {rotateZ, rotateZ, rotateZ, rotateX, rotateX};            //  3 to right, 1 on top, 5 to the back
-constexpr std::array<Rotation,6>  rotate_321  {rotateZ, rotateZ, rotateZ, rotateX, rotateX, rotateX};   //  3 to right, 2 on top, 1 to the back
-
-
-// putting 4 to the right.
-constexpr std::array<Rotation,1>  rotate_412  {rotateZ};                                                //  4 to right, 1 on top, 2 to the back
-constexpr std::array<Rotation,2>  rotate_451  {rotateZ, rotateX};                                       //  4 to right, 5 on top, 1 to the back
-constexpr std::array<Rotation,3>  rotate_465  {rotateZ, rotateX, rotateX};                              //  4 to right, 6 on top, 5 to the back
-constexpr std::array<Rotation,4>  rotate_426  {rotateZ, rotateX, rotateX, rotateX};                     //  4 to right, 2 on top, 6 to the back
-
-
-// putting 5 to the right.
-constexpr std::array<Rotation,3>  rotate_531  {rotateY,rotateY,rotateY};                                //  5 to right, 3 on top, 1 to the back
-constexpr std::array<Rotation,4>  rotate_563  {rotateY,rotateY,rotateY, rotateX};                       //  5 to right, 6 on top, 3 to the back
-constexpr std::array<Rotation,5>  rotate_546  {rotateY,rotateY,rotateY, rotateX, rotateX};              //  5 to right, 4 on top, 6 to the back
-constexpr std::array<Rotation,6>  rotate_514  {rotateY,rotateY,rotateY, rotateX, rotateX, rotateX};     //  5 to right, 1 on top, 4 to the back
-                                                     
-// putting 6 to the right.
-constexpr std::array<Rotation,2>  rotate_642  {rotateZ, rotateZ};                                       //  6 to right, 4 on top, 2 to the back
-constexpr std::array<Rotation,3>  rotate_654  {rotateZ, rotateZ, rotateX};                              //  6 to right, 5 on top, 4 to the back
-constexpr std::array<Rotation,4>  rotate_635  {rotateZ, rotateZ, rotateX, rotateX};                     //  6 to right, 3 on top, 5 to the back
-constexpr std::array<Rotation,5>  rotate_623  {rotateZ, rotateZ, rotateX, rotateX, rotateX};            //  6 to right, 2 on top, 4 to the back
-
+    rotate_412,
+    rotate_451,
+    rotate_465,
+    rotate_426,
+          
+    rotate_642,
+    rotate_654,
+    rotate_635,
+    rotate_623,
+}};
