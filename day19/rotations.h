@@ -30,10 +30,6 @@ constexpr Rotation rotateZ
 }};
 
 
-
-
-
-
 ///
 
 /*
@@ -115,6 +111,12 @@ constexpr std::array<Rotation,2>  rotate_213  {rotateY, rotateX};               
 constexpr std::array<Rotation,3>  rotate_241  {rotateY, rotateX, rotateX};              //  2 to right, 4 on top, 1 to the back
 constexpr std::array<Rotation,4>  rotate_264  {rotateY, rotateX, rotateX, rotateX};     //  2 to right, 6 on top, 4 to the back
 
+
+// putting 3 to the right.
+constexpr std::array<Rotation,1>  rotate_362  {rotateZ};                                //  3 to right, 6 on top, 2 to the back
+//constexpr std::array<Rotation,2>  rotate_213  {rotateY, rotateX};                       //  2 to right, 1 on top, 3 to the back
+//constexpr std::array<Rotation,3>  rotate_241  {rotateY, rotateX, rotateX};              //  2 to right, 4 on top, 1 to the back
+//constexpr std::array<Rotation,4>  rotate_264  {rotateY, rotateX, rotateX, rotateX};     //  2 to right, 6 on top, 4 to the back
 
 
 

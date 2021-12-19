@@ -70,6 +70,7 @@ void testDie()
     constexpr  auto die_241 = rotateDie(rotate_241);
     constexpr  auto die_264 = rotateDie(rotate_264);
 
+    constexpr  auto die_362 = rotateDie(rotate_362);
 
 
 
@@ -85,5 +86,7 @@ void testDie()
     printDie(die_213,   "           2 to right, 1 on top, 3 to the back");
     printDie(die_241,   "           2 to right, 4 on top, 1 to the back");
     printDie(die_264,   "           2 to right, 6 on top, 6 to the back");
+    std::cout<<"---\n";
+    printDie(die_362,   "           3 to right, 6 on top, 2 to the back");
 
 }
