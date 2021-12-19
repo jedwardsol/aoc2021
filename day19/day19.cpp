@@ -17,6 +17,8 @@ using namespace std::literals;
 
 #include "rotations.h"
 
+void testDie();
+
 extern std::istringstream realData;
 extern std::istringstream testData;
 
@@ -67,6 +69,7 @@ auto readData(std::istringstream &data)
 int main()
 try
 {
+    testDie();
 
     auto scanners=readData(testData);
 

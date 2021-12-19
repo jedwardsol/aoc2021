@@ -364,6 +364,7 @@
     <ClCompile Include="realData.cpp" />
     <ClCompile Include="day19.cpp" />
     <ClCompile Include="testData.cpp" />
+    <ClCompile Include="testDie.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="rotation.h" />
