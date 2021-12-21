@@ -5,17 +5,10 @@
 #include <map>
 #include <array>
 
-
 #include <iostream>
-#include <sstream>
 #include <format>
 
-#include <algorithm>
-#include <numeric>
-#include <ranges>
 
-using namespace std::literals;
-#include "include/thrower.h"
 
 
 struct DeterministicD100 
