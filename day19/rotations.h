@@ -82,7 +82,7 @@ constexpr Die initialDie =
 }};
 
 
-
+                       
 
 
 // keeping 1 to the right.
@@ -94,7 +94,7 @@ constexpr Rotation  rotate_124  {rotateX * rotateX * rotateX};                  
 // putting 2 to the right.
 constexpr Rotation  rotate_236  {rotateY};                                                      //  2 to right, 3 on top, 6 to the back
 constexpr Rotation  rotate_213  {rotateX * rotateY};                                            //  2 to right, 1 on top, 3 to the back
-constexpr Rotation  rotate_241  {rotateX * rotateY * rotateY};                                  //  2 to right, 4 on top, 1 to the back
+constexpr Rotation  rotate_241  {rotateX * rotateX * rotateY};                                  //  2 to right, 4 on top, 1 to the back
 constexpr Rotation  rotate_264  {rotateX * rotateX * rotateX * rotateY};                        //  2 to right, 6 on top, 4 to the back
 
 // putting 3 to the right.
@@ -157,6 +157,11 @@ constexpr std::array<Rotation,24>  allRotations
     rotate_465,
     rotate_426,
           
+    rotate_531,
+    rotate_563,
+    rotate_546,
+    rotate_514,
+
     rotate_642,
     rotate_654,
     rotate_635,

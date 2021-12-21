@@ -1,8 +1,39 @@
 #pragma once
 #include <array>
 
-using Location = std::array<int,3>;
-using Rotation = std::array<std::array<int,3>,3>;
+using Location    = std::array<int,3>;
+using Translation = std::array<int,3>;
+using Rotation    = std::array<std::array<int,3>,3>;
+
+
+
+constexpr Translation operator-(Location const &lhs, Location const &rhs)
+{
+    return {{  lhs[0]-rhs[0],
+               lhs[1]-rhs[1],
+               lhs[2]-rhs[2]
+           }};
+}
+
+constexpr Location operator+(Location const &lhs, Translation const &rhs)
+{
+    return {{  lhs[0]+rhs[0],
+               lhs[1]+rhs[1],
+               lhs[2]+rhs[2]
+           }};
+}
+
+
+constexpr Location      testStart           {{ 1,2,3 }};
+constexpr Location      testEnd             {{ 5,7,9 }};
+constexpr Translation   testTranslation     { testStart - testEnd};
+
+constexpr Location      testRelocated       { testEnd+testTranslation };
+
+static_assert(testTranslation == Translation{{-4,-5,-6}});
+static_assert(testRelocated == testStart);
+
+
 
 constexpr Rotation operator*(Rotation const &lhs,Rotation const &rhs)
 {
