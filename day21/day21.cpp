@@ -2,7 +2,9 @@
 #include <cassert>
 #include <cstdint>
 
-#include <random>
+#include <map>
+#include <array>
+
 
 #include <iostream>
 #include <sstream>
@@ -33,13 +35,17 @@ struct DeterministicD100
 
 struct Player
 {
-    int position;
-    int score{};
+    int16_t position;
+    int16_t score{};
+
+    auto operator<=>(Player const &rhs) const noexcept = default;
 };
 
 struct Game
 {
     Player player[2];
+
+    auto operator<=>(Game const &rhs) const noexcept = default;
 };
 
 void part1()
@@ -60,11 +66,19 @@ void part1()
         current %= 2;
     }
 
-    std::cout << "part 1 : "  << std::min(game.player[0].score,game.player[1].score) * die.timesRolled;
+    std::cout << std::format("part 1 : {}\n",std::min(game.player[0].score,game.player[1].score) * die.timesRolled);;
 }
 
 void part2()
 {
+    std::map<Game, int64_t>     universes;
+    std::array<int64_t,2>       wins{};
+    Game                        initialState{{{4-1,0},{5-1,0}}};
+
+    universes[initialState]=1;
+
+
+    std::cout << std::format("part 2 : {}\n",std::max(wins[0],wins[1]));
 }
 
 int main()
@@ -72,7 +86,6 @@ try
 {
     part1();
     part2();
-
 
     return 0;
 }
