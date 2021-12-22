@@ -245,10 +245,10 @@ try
 #endif DO_NAIVE
 
     auto initialisationCount = count(initialisationCuboids);
-//  auto rebootCount         = count(rebootCuboids);
+    auto rebootCount         = count(rebootCuboids);
 
     std::cout << "Part 1 : " << initialisationCount << "\n";
-//  std::cout << "Part 2 : " << initialisationCount + rebootCount << "\n";
+    std::cout << "Part 2 : " << initialisationCount + rebootCount << "\n";
 
 
     return 0;
