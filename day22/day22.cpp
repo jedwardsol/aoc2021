@@ -17,7 +17,7 @@
 using namespace std::literals;
 #include "include/thrower.h"
 
-#define DO_NAIVE false
+#define DO_NAIVE true
 
 
 struct Range
@@ -31,7 +31,7 @@ struct Range
                && end   < 50;
     };
 
-    bool    inRange(int i)
+    bool    contains(int i) const
     {
         return     i >= start
                &&  i <= end;
@@ -47,11 +47,11 @@ struct Cuboid
     Range   rz;
 
 
-    bool    inCuboid(int x,int y, int z)
+    bool    contains(int x,int y, int z) const
     {
-        return     rx.inRange(x)
-               &&  ry.inRange(y)
-               &&  rz.inRange(z);
+        return     rx.contains(x)
+               &&  ry.contains(y)
+               &&  rz.contains(z);
     }
 };
 
@@ -108,6 +108,7 @@ auto readCuboids()
     std::vector<Cuboid>     rebootCuboids;
 
     std::ifstream           data{"data22.txt"};
+//  std::ifstream           data{"test22.txt"};
     std::string             line;
 
     if(!data)
@@ -141,9 +142,9 @@ void part1_naive(std::vector<Cuboid> const &cuboids)
 {
     for(auto cuboid : cuboids)
     {
-        for(int x = cuboid.x.start; x <= cuboid.x.end; x++)
-        for(int y = cuboid.y.start; y <= cuboid.y.end; y++)
-        for(int z = cuboid.z.start; z <= cuboid.z.end; z++)
+        for(int x = cuboid.rx.start; x <= cuboid.rx.end; x++)
+        for(int y = cuboid.ry.start; y <= cuboid.ry.end; y++)
+        for(int z = cuboid.rz.start; z <= cuboid.rz.end; z++)
         {
             cube[x+50][y+50][z+50] = cuboid.on;
         }
@@ -175,13 +176,12 @@ int64_t count(std::vector<Cuboid> const &cuboids)
     for(auto const &cuboid : cuboids)
     {
         xs.push_back(cuboid.rx.start);
-        xs.push_back(cuboid.rx.end);
+        xs.push_back(cuboid.rx.end+1);
         ys.push_back(cuboid.ry.start);
-        ys.push_back(cuboid.ry.end);
+        ys.push_back(cuboid.ry.end+1);
         zs.push_back(cuboid.rz.start);
-        zs.push_back(cuboid.rz.end);
+        zs.push_back(cuboid.rz.end+1);
     }
-
 
     auto uniq = [](auto &range)
     {
@@ -196,8 +196,41 @@ int64_t count(std::vector<Cuboid> const &cuboids)
     uniq(zs);
 
 
+    // space is partitioned into a lot of smaller cuboids.
+    // each of which is either fully on or fully off
 
-    return 0;
+    int64_t count{};
+
+    for(int xi=0; xi < xs.size() - 1 ; xi++)
+    {
+        for(int yi=0; yi < ys.size() - 1 ; yi++)
+        {
+            for(int zi=0; zi < zs.size() - 1 ; zi++)
+            {
+                bool    on=false;
+
+                for(auto &cuboid : cuboids)
+                {
+                    if(cuboid.contains(xs[xi],ys[yi],zs[zi]))
+                    {
+                        on = cuboid.on;
+                    }
+                }
+
+
+                if(on)
+                {
+                    count +=   1ll
+                             * (xs[xi+1] - xs[xi] )
+                             * (ys[yi+1] - ys[yi] )
+                             * (zs[zi+1] - zs[zi] );
+                }
+            }
+        }
+    }
+
+
+    return count;
 }
 
 
@@ -212,7 +245,7 @@ try
 #endif DO_NAIVE
 
     auto initialisationCount = count(initialisationCuboids);
-    auto rebootCount         = count(rebootCuboids);
+//  auto rebootCount         = count(rebootCuboids);
 
     std::cout << "Part 1 : " << initialisationCount << "\n";
 //  std::cout << "Part 2 : " << initialisationCount + rebootCount << "\n";
