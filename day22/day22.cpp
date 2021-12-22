@@ -14,6 +14,11 @@
 #include <numeric>
 #include <ranges>
 
+#include <chrono>
+
+namespace chr   = std::chrono;
+using     Clock = chr::steady_clock;
+
 using namespace std::literals;
 #include "include/thrower.h"
 
@@ -245,11 +250,22 @@ try
 #endif DO_NAIVE
 
     auto initialisationCount = count(initialisationCuboids);
+ 
+    auto start = Clock::now();
     auto rebootCount         = count(rebootCuboids);
+    auto end   = Clock::now();
 
     std::cout << "Part 1 : " << initialisationCount << "\n";
     std::cout << "Part 2 : " << initialisationCount + rebootCount << "\n";
 
+
+    auto duration = chr::duration_cast<chr::seconds>(end-start);
+
+    std::cout << std::format("Time : {}\n",duration);
+
+    // 10 minutes!
+    // half a billion cuboids.
+    // parallelisable
 
     return 0;
 }
