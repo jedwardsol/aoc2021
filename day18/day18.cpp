@@ -1,6 +1,5 @@
 // ugly!
 
-#define NOMINMAX
 #include <cassert>
 #include <cstdint>
 

@@ -68,7 +68,7 @@ Range readRange(std::string_view   line)
     auto [next, error1] = std::from_chars(line.data(), line.data()+line.size(),range.start);
     assert(error1 == std::errc{});
                 
-    auto [_, error2] = std::from_chars(next+2, line.data()+line.size(),range.end);
+    [[maybe_unused]] auto [_, error2] = std::from_chars(next+2, line.data()+line.size(),range.end);
     assert(error2 == std::errc{});
 
     assert(range.start < range.end);
@@ -170,7 +170,7 @@ void part1_naive(std::vector<Cuboid> const &cuboids)
 // right answer is 564654
 
 #endif DO_NAIVE
-
+               
 
 int64_t count(std::vector<Cuboid> const &cuboids)
 {
