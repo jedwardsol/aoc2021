@@ -5,6 +5,7 @@
 #include <vector>
 #include <variant>
 #include <map>
+#include <queue>
 
 #include <iostream>
 #include <sstream>
@@ -90,9 +91,20 @@ struct ALU
     ALU(Program program) : program{std::move(program)}
     {}
 
-    void run()
-    {
 
+    int operator()(int v)
+    {
+        return v;
+    }
+    
+    int operator()(Instruction::Register r)
+    {
+        return registers[r];
+    }
+
+
+    void run(    std::queue<int>         inputs)
+    {
         for(auto &instruction : program)
         {
             debug(instruction.instruction);
@@ -100,17 +112,57 @@ struct ALU
             switch(instruction.opcode)            
             {
             case Instruction::OpCode::inp:
+                registers[instruction.destination] = inputs.front();
+                inputs.pop();
+                break;
 
+            case Instruction::OpCode::add:
+                registers[instruction.destination] =    registers[instruction.destination]
+                                                     +  std::visit(*this, instruction.source);
+                break;
+
+            case Instruction::OpCode::mul:
+                registers[instruction.destination] =    registers[instruction.destination]
+                                                     *  std::visit(*this, instruction.source);
+                break;
+
+            case Instruction::OpCode::div:
+                registers[instruction.destination] =    registers[instruction.destination]
+                                                     /  std::visit(*this, instruction.source);
+                break;
+
+            case Instruction::OpCode::mod:
+                registers[instruction.destination] =    registers[instruction.destination]
+                                                     %  std::visit(*this, instruction.source);
+                break;
+
+            case Instruction::OpCode::eql:
+                registers[instruction.destination] =    registers[instruction.destination]
+                                                     == std::visit(*this, instruction.source);
+                break;
+
+            default:
+                throw_runtime_error("bad instruction");
             }
-
-
         }
+
+        debug("end");
 
     }
 
     void debug(std::string const &nextInstruction)
     {
+        if(nextInstruction.starts_with("inp"))
+        {
+            std::cout << "\n\n";
+        }
 
+        std::cout << std::format("w={:10}    x={:10}    y={:10}    z={:10}    \n",registers[0],
+                                                                                  registers[1],
+                                                                                  registers[2],
+                                                                                  registers[3]);
+
+        std::cout << std::format("{:80} next : {}\n","",nextInstruction);
 
     }
 
@@ -133,9 +185,10 @@ try
         }
     }
 
+   
     ALU alu{program};
 
-    alu.run();
+    alu.run(std::queue<int>{{1,2,3,4,5,6,7,1,2,3,4,5,6,7}});
 
 
     return 0;
